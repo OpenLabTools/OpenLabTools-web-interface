@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <!-- Bootstrap -->
+      <link href="css/bootstrap.min.css" rel="stylesheet">
+      <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+      <script src="js/jquery-1.11.1.min.js"></script>
+      <!-- Include all compiled plugins (below), or include individual files as needed -->
+      <script src="js/bootstrap.min.js"></script>
+      <script language="javascript" type="text/javascript" src="flot/jquery.flot.js"></script>
+      <title>OpenLabTools Web Interface</title>
+   </head>
+   <body>
+      <h1>OpenLabTools Web Interface</h1>
+      <button type="button" id="led-toggle" data-loading-text="Working..." class="btn btn-primary">
+      LED Toggle
+      </button>
+      <p id="LED-Status"></p>
+      <script>
+      $('#led-toggle').click(
+         function () {
+            var btn = $(this);
+            btn.button('loading');
+		 var toggle_state = "On";
+		 if ( /On/.test($("#LED-Status").text()) ) toggle_state = "Off";
+            $.getJSON( "../toggle_led", { state: toggle_state } )
+            .done( function (json) {
+               console.log("LED state: " + json.state);
+               $("#LED-Status").text("LED state: " + json.state);
+		 })
+            .fail( function () {
+	       alert("The led toggle failed!")
+		 })
+	    .always( function () {
+	       btn.button('reset');
+		 });
+         });
+      </script>
+   </body>
+</html>

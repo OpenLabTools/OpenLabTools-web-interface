@@ -1,0 +1,67 @@
+{% macro button(name, id, status_indicator = false) -%}
+
+    <button type="button" id="{{ id }}" data-loading-text="Working..."
+            class="btn btn-primary">{{name}}</button>
+
+    {% if status_indicator %}
+    <p id="{{ id }}-Status"></p>
+    {% endif %}
+
+    <script>
+        $('#{{ id }}').click(
+            function () {
+                btn.button('loading');
+                var btn = $(this);
+                $.getJSON( "../button_click", { id: "{{ id }}" } )
+                .done( function (json) {
+                    console.log("State: " + json.state);
+                    {% if status_indicator %}
+                    $("#{{ id }}-Status").text("Status: " + json.state);
+                    {% endif %}
+                })
+                .fail( function () {
+                    alert("Request failed!")
+                })
+                .always( function () {
+                    btn.button('reset');
+                });
+            });
+    </script>
+
+{%- endmacro %}
+
+
+{% macro panel(name, id, sub_elem_dict) -%}
+
+<div class="panel panel-default">
+    <div class="panel-heading">{{name}}</div>
+    <div class="panel-body">
+        {{sub_elem_dict|debug}}
+        {% for key, item in sub_elem_dict.iteritems() if key != 'id' -%}
+
+            {{ button( name=key, id=sub_elem_dict[key]['id']) }}
+        {%- endfor %}
+    </div>
+</div>
+{%- endmacro %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <base href="static/" target="_blank">
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+        <script src="js/jquery-1.11.1.min.js"></script>
+        <script src="js/bootstrap.min.js"></script>
+        <script language="javascript" type="text/javascript" src="flot/jquery.flot.js"></script>
+        <title>OpenLabTools Web Interface</title>
+    </head>
+    <body>
+        <h1>OpenLabTools Web Interface</h1>
+        {% for key, value in config.iteritems() %}
+        <p>{{ panel( key, config[key]['id'], config[key] ) }}</p>
+        {%- endfor %}
+    </body>
+</html>

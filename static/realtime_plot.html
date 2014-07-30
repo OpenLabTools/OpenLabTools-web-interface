@@ -1,0 +1,90 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>Flot Examples: AJAX</title>
+	<link href="./flot/examples/examples.css" rel="stylesheet" type="text/css">
+	<!--[if lte IE 8]><script language="javascript" type="text/javascript" src="./flot/excanvas.min.js"></script><![endif]-->
+	<script language="javascript" type="text/javascript" src="./flot/jquery.js"></script>
+	<script language="javascript" type="text/javascript" src="./flot/jquery.flot.js"></script>
+    <script language="javascript" type="text/javascript" src="./flot/jquery.flot.time.js"></script>
+	<script type="text/javascript">
+
+	$(function() {
+
+		var options = {
+			lines: {
+				show: true
+			},
+			points: {
+				show: true
+			},
+			xaxis: {
+                mode: "time"
+			}
+		};
+
+		// Initiate a recurring data update
+		$("button.dataUpdate").click(function () {
+
+			var data = [];
+
+			$.plot("#placeholder", data, options);
+
+			var iteration = 0;
+
+			function fetchData() {
+
+				++iteration;
+
+				function onDataReceived(series) {
+
+					// Load all the data in one pass; if we only got partial
+					// data we could merge it with what we already have.
+					data.push( [series.time*1000, series.data] );
+                    if (iteration > 10) {
+                        data.shift()
+                    }
+                    console.log(data)
+					$.plot("#placeholder", [{ lable: "first serise", data: data }], options);
+				}
+
+				// Normally we call the same URL - a script connected to a
+				// database - but in this case we only have static example
+				// files, so we need to modify the URL.
+
+				$.ajax({
+					url: "/get_new_point",
+					type: "GET",
+					dataType: "json",
+					success: onDataReceived
+				});
+
+				setTimeout(fetchData, 2000);
+			}
+
+			fetchData();
+		});
+
+		//$("button.dataUpdate").click();
+	});
+
+	</script>
+</head>
+<body>
+	<div id="header">
+		<h2>AJAX</h2>
+	</div>
+	<div id="content">
+		<div class="demo-container">
+			<div id="placeholder" class="demo-placeholder"></div>
+		</div>
+		<p>If you combine AJAX with setTimeout, you can poll the server for new data.</p>
+		<p>
+			<button class="dataUpdate">Poll for data</button>
+		</p>
+
+	</div>
+</body>
+</html>

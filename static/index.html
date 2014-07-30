@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <script src="js/jquery-1.11.1.min.js"></script>
+        <script src="flot/jquery.flot.js"></script>
+        <title>flot Test</title>
+    </head>
+    <body>
+		<div id="placeholder" style="width:200px;height:100px"></div>
+		<script>
+			$.plot($("#placeholder"), [ [[0, 0], [1, 1]] ], { yaxis: { max: 1 } });
+		</script>
+    </body>
+</html>     
