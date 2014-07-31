@@ -10,37 +10,34 @@
 	<script language="javascript" type="text/javascript" src="./flot/jquery.flot.js"></script>
     <script language="javascript" type="text/javascript" src="./flot/jquery.flot.time.js"></script>
 	<script type="text/javascript">
-	$(function() {
+	
 		var options = {
 			lines:  { show: true },
 			points: { show: true },
 			xaxis:  { mode: "time" }
 		};
-		// Initiate a recurring data update
-		$("button.dataUpdate").click(function () {
-			var data = [];
-			$.plot("#placeholder", data, options);
-			var iteration = 0;
-			function fetchData() {
-				++iteration;
-				function onDataReceived(series) {
-					data.push( [series.time*1000, series.data] );
-                    if (iteration > 10) { data.shift() }
-                    console.log(data)
-					$.plot("#placeholder", [{ lable: "first serise", data: data }], options);
-				}
-				$.ajax({
-					url: "/get_new_point",
-					type: "GET",
-					dataType: "json",
-					success: onDataReceived
-				});
-				setTimeout(fetchData, 2000);
+		
+		var data = [];
+		//$.plot("#placeholder", data, options);
+		var iteration = 0;
+
+		function fetchData() {
+			++iteration;
+			function onDataReceived(series) {
+				data.push( [series.time*1000, series.data] );
+                if (iteration > 10) { data.shift() }
+                console.log(data)
+				$.plot("#placeholder", [{ lable: "first serise", data: data }], options);
 			}
-			fetchData();
-		});
-		//$("button.dataUpdate").click();
-	});
+			$.ajax({
+				url: "/get_new_point",
+				type: "GET",
+				dataType: "json",
+				success: onDataReceived
+			});
+			setTimeout(fetchData, 2000);
+		}
+		fetchData();
 	</script>
 </head>
 <body>
