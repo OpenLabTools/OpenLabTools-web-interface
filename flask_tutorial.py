@@ -1,4 +1,5 @@
-#! /usr/bin/env python
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 from flask import Flask, render_template, request, jsonify
 app = Flask(__name__)
 
@@ -25,8 +26,6 @@ from OLT_html_generator import unit_test
 @app.route('/html_gen', methods=['GET'])
 def html_gen():
     return unit_test()
-
-
 
 if __name__ == "__main__":
     state = 0
