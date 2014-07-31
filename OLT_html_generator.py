@@ -16,7 +16,9 @@ def generate_html(config_fn, template_fn,temp_fn):
     # pp = pprint.PrettyPrinter(indent=4)
     # pp.pprint(config.dict())
     env = Environment(loader=FileSystemLoader(template_fn))
-    def debug(x): print x
+    def debug(x):
+        print x
+        return ""
     env.filters['debug'] = debug
     template = env.get_template(temp_fn)
     return template.render( config=config )
