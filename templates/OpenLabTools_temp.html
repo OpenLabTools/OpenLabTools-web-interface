@@ -34,11 +34,12 @@
 {% macro panel(name, id, sub_elem_dict) -%}
 
 <div class="panel panel-default">
-    <div class="panel-heading">{{name}}</div>
+    <div class="panel-heading">
+        <b>{{name}}</b>
+    </div>
     <div class="panel-body">
         {{sub_elem_dict|debug}}
         {% for key, item in sub_elem_dict.iteritems() if key != 'id' -%}
-
             {{ button( name=key, id=sub_elem_dict[key]['id']) }}
         {%- endfor %}
     </div>
@@ -56,12 +57,25 @@
         <script src="js/jquery-1.11.1.min.js"></script>
         <script src="js/bootstrap.min.js"></script>
         <script language="javascript" type="text/javascript" src="flot/jquery.flot.js"></script>
+        <container>
         <title>OpenLabTools Web Interface</title>
+        <style type="text/css">
+            @media screen {
+            .container {
+                max-width: 730px;
+                }
+            }
+        </style>
+        <link rel="shortcut icon" href="http://www.cam.ac.uk/profiles/cam/themes/cam/assets/images/favicon.ico">
     </head>
     <body>
-        <h1>OpenLabTools Web Interface</h1>
+        <div class="container">
+        <div class="page-header">
+            <h1>OpenLabTools Web Interface</h1>
+        </div>
         {% for key, value in config.iteritems() %}
         <p>{{ panel( key, config[key]['id'], config[key] ) }}</p>
         {%- endfor %}
+        </div>
     </body>
 </html>
