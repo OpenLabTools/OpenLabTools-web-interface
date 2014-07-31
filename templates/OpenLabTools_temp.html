@@ -1,17 +1,17 @@
 {% macro button(name, id, status_indicator = false) -%}
+    <div class="button_container">
+        {% if status_indicator %}
+        <p id="{{ id }}-Status">Status:</p>
+        {% endif %}
 
-    <button type="button" id="{{ id }}" data-loading-text="Working..."
-            class="btn btn-primary">{{name}}</button>
-
-    {% if status_indicator %}
-    <p id="{{ id }}-Status"></p>
-    {% endif %}
-
+        <button type="button" id="{{ id }}" data-loading-text="Working..."
+                class="btn btn-primary">{{name}}</button>
+    </div>
     <script>
         $('#{{ id }}').click(
             function () {
-                btn.button('loading');
                 var btn = $(this);
+                btn.button('loading');
                 $.getJSON( "../button_click", { id: "{{ id }}" } )
                 .done( function (json) {
                     console.log("State: " + json.state);
@@ -27,7 +27,6 @@
                 });
             });
     </script>
-
 {%- endmacro %}
 
 
@@ -38,9 +37,9 @@
         <b>{{name}}</b>
     </div>
     <div class="panel-body">
-        {{sub_elem_dict|debug}}
         {% for key, item in sub_elem_dict.iteritems() if key != 'id' -%}
-            {{ button( name=key, id=sub_elem_dict[key]['id']) }}
+            {{key|debug}}
+            {{ button( name=key, id=sub_elem_dict[key]['id'],  status_indicator = true) }}
         {%- endfor %}
     </div>
 </div>
@@ -64,6 +63,9 @@
             .container {
                 max-width: 730px;
                 }
+            }
+            div.button_container{
+                display: inline-block;
             }
         </style>
         <link rel="shortcut icon" href="http://www.cam.ac.uk/profiles/cam/themes/cam/assets/images/favicon.ico">
