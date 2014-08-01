@@ -10,34 +10,42 @@
 	<script language="javascript" type="text/javascript" src="./flot/jquery.flot.js"></script>
     <script language="javascript" type="text/javascript" src="./flot/jquery.flot.time.js"></script>
 	<script type="text/javascript">
-	
-		var options = {
-			lines:  { show: true },
-			points: { show: true },
-			xaxis:  { mode: "time" }
-		};
-		
-		var data = [];
-		//$.plot("#placeholder", data, options);
-		var iteration = 0;
+		$(function() {
+		    var options = {
+		        lines:  { show: true },
+		        points: { show: true },
+		        xaxis:  { mode: "time" },
+		        series: { shadowSize: 0	} // Drawing is faster without shadows
+		    };
 
-		function fetchData() {
-			++iteration;
-			function onDataReceived(series) {
-				data.push( [series.time*1000, series.data] );
-                if (iteration > 10) { data.shift() }
-                console.log(data)
-				$.plot("#placeholder", [{ lable: "first serise", data: data }], options);
-			}
-			$.ajax({
-				url: "/get_new_point",
-				type: "GET",
-				dataType: "json",
-				success: onDataReceived
-			});
-			setTimeout(fetchData, 2000);
-		}
-		fetchData();
+		    // Initiate a recurring data update
+		    function start_updating() {
+		        var data = [];
+		        var plot = $.plot("#placeholder", data, options);
+		        var iteration = 0;
+		        function fetchData() {
+		            ++iteration;
+		            function onDataReceived(series) {
+		                data.push( [series.time*1000, series.data] );
+		                if (iteration > 20) { data.shift() }
+		                //console.log(data)
+		                plot.setData([data]);
+		                plot.setupGrid()
+		                plot.draw();
+		            }
+		            $.ajax({
+		                url: "/get_new_point",
+		                type: "GET",
+		                dataType: "json",
+		                success: onDataReceived
+		            });
+	            setTimeout(fetchData, 1000);
+		        }
+		        fetchData();
+		    };
+		    
+		    start_updating();
+		});
 	</script>
 </head>
 <body>

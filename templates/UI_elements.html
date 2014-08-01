@@ -8,24 +8,7 @@
                 class="btn btn-primary">{{name}}</button>
     </div>
     <script>
-        $('#{{ id }}').click(
-            function () {
-                var btn = $(this);
-                btn.button('loading');
-                $.getJSON( "../button_click", { id: "{{ id }}" } )
-                .done( function (json) {
-                    console.log("State: " + json.state);
-                    {% if status_indicator %}
-                    $("#{{ id }}-Status").text("Status: " + json.state);
-                    {% endif %}
-                })
-                .fail( function () {
-                    alert("Request failed!")
-                })
-                .always( function () {
-                    btn.button('reset');
-                });
-            });
+        $('#{{ id }}').click( function(){ button_ajax("{{ id }}") } );
     </script>
 {%- endmacro %}
 
