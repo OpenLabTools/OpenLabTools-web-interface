@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from flask import Flask, render_template, request, jsonify
+import calendar, time, random
 app = Flask(__name__)
 
 @app.route('/')
@@ -14,7 +15,13 @@ def toggle_led():
     elif requested_state == "Off": state = "Off"
     return jsonify( **{ 'state': state } )
 
-import calendar, time, random
+
+@app.route( '/button_click' )
+def button_click():
+    button_id = request.args.get("id")
+    return jsonify( **{ 'state': random.random() } )
+
+
 @app.route('/get_new_point', methods=['GET'])
 def get_new_point():
     return jsonify(**{
@@ -22,10 +29,12 @@ def get_new_point():
         "data" : (random.random() - 0.5) * 60
     })
 
+
 from OLT_html_generator import unit_test
 @app.route('/html_gen', methods=['GET'])
 def html_gen():
     return unit_test()
+
 
 if __name__ == "__main__":
     state = 0

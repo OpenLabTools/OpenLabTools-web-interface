@@ -39,7 +39,6 @@ function plot_time_serise(name, id) {
 };
 
 function button_ajax(id, status_indicator) {
-    console.log(id)
     var btn = $('#'+id);
     btn.button('loading');
     $.getJSON( "../button_click", { id: id } )
