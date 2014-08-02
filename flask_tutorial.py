@@ -1,19 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from flask import Flask, render_template, request, jsonify
-import calendar, time, random
+from flask import Flask, render_template, request, jsonify, g
+import calendar, time, random, xmlrpclib
+
 app = Flask(__name__)
 
-@app.route('/')
-def index():
-    return 'Index Page'
-
-@app.route('/toggle_led', methods=['GET'])
-def toggle_led():
-    requested_state = request.args.get("state")
-    if requested_state == "On": state = "On"
-    elif requested_state == "Off": state = "Off"
-    return jsonify( **{ 'state': state } )
+def get_xmlrpc_server():
+    if not hasattr(g, 'xmlrpc_server'):
+        address = "http://localhost:8000/"
+        g.xmlrpc_server = xmlrpclib.ServerProxy( address )
+    return g.xmlrpc_server
 
 
 @app.route( '/button_click' )
@@ -37,6 +33,5 @@ def html_gen():
 
 
 if __name__ == "__main__":
-    state = 0
     app.debug = True
     app.run(host='0.0.0.0')
