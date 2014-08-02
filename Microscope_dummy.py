@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
+from random import random
 class Microscope():
     def __init__(self):
         self.temp = 1
@@ -12,11 +12,12 @@ class Microscope():
 
     def get_temp(self):
         if self.control_temp:
-            self.temp = self.temp + (self.set_temp - self.temp)*random.random()*1.2;
-        return set_temp
+            self.temp = self.temp + (self.set_temp - self.temp)*random()*1.2;
+        return self.temp
 
-    def set_temp(self, temp):
+    def set_set_temp(self, temp):
         self.set_temp = float(temp)
+        return self.set_temp
 
     def get_set_temp(self):
         return self.set_temp
