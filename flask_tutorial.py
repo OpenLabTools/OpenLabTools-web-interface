@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 from flask import Flask, render_template, request, jsonify, g
 import calendar, time, random, xmlrpclib
+from OLT_config_parser import get_config
 
 app = Flask(__name__)
 
@@ -26,10 +27,19 @@ def get_new_point():
     })
 
 
-from OLT_html_generator import unit_test
+@app.template_filter('debug')
+def debug(x):
+    """print content to console from jinja2 templates."""
+    print x
+    return ""
+
+
 @app.route('/html_gen', methods=['GET'])
 def html_gen():
-    return unit_test()
+    template_name = 'OpenLabTools_template.html'
+    config_name = 'OLT_config_test.ini'
+    return render_template( template_name, 
+        UI_config = get_config(config_name))
 
 
 if __name__ == "__main__":
