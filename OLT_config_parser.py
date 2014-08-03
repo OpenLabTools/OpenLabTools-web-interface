@@ -8,7 +8,6 @@ def get_config(config_fn):
     config = ConfigObj(config_fn)
 
     for panel_name, panel_elems in config.items():
-        print panel_elems.keys()
         if "id" not in panel_elems.keys():
             config[panel_name]["id"] = str(uuid4())[:id_len]
         for elem_name, elem_args in panel_elems.items():
@@ -18,3 +17,12 @@ def get_config(config_fn):
         
     config.write()
     return config
+
+
+def get_config_by_id(config, elem_id):
+    for panel_name, panel_elems in config.items():
+        for elem_name, elem_args in panel_elems.items():
+            if elem_name != 'id':
+                if elem_args['id'] == elem_id:
+                    return elem_args
+    return None

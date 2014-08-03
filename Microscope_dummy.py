@@ -7,8 +7,9 @@ class Microscope():
         self.set_temp = self.temp
         self.control_temp = True
 
-    def motion_control(self, direction):
+    def motion_control(self, direction="Down"):
         print direction
+        return direction
 
     def get_temp(self):
         if self.control_temp:
