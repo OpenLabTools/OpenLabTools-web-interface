@@ -6,11 +6,13 @@ from OLT_config_parser import get_config, get_config_by_id
 
 app = Flask(__name__)
 
+
 def get_xmlrpc_server():
     if not hasattr(g, 'xmlrpc_server'):
         address = "http://localhost:8000/RPC2"
         g.xmlrpc_server = xmlrpclib.ServerProxy( address )
     return g.xmlrpc_server
+
 
 def get_config_obj():
     if not hasattr(g, 'UI_config'):
@@ -26,7 +28,9 @@ def button_click():
     xmlrpc_server = get_xmlrpc_server()
     print elem_args['func']
     f = getattr(xmlrpc_server, elem_args['func'])
-    retval = f()
+    if type( elem_args['args'] ) is list:
+        retval = f( *elem_args['args'] )
+    else: retval = f( elem_args['args'] )
     return jsonify( **{ 'state': retval } )
 
 
