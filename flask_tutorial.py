@@ -21,12 +21,16 @@ def get_config_obj():
     return g.UI_config
 
 
-def xmlrpc_call( func, args ):
+def xmlrpc_call( elem_args ):
     xmlrpc_server = get_xmlrpc_server()
+    func = elem_args['func']
     f = getattr(xmlrpc_server, func)
-    if type( args ) is list:
-        retval = f( *args )
-    else: retval = f( args )
+    if 'args' in elem_args.keys():
+        args = elem_args['args']
+        if type( args ) is list:
+            retval = f( *args )
+        else: retval = f( args )
+    else: retval = f()
     return retval
 
 
@@ -34,8 +38,18 @@ def xmlrpc_call( func, args ):
 def button_click():
     button_id = request.args.get("id")
     elem_args = get_config_by_id(get_config_obj(), button_id)
-    retval = xmlrpc_call( elem_args['func'], elem_args['args'] )
+    retval = xmlrpc_call( elem_args )
     return jsonify( **{ 'state': retval } )
+
+
+@app.route('/get_point')
+def tsp_get_point():
+    tsp_id = request.args.get("id")
+    elem_args = get_config_by_id(get_config_obj(), tsp_id)
+    retval = xmlrpc_call( elem_args )
+    return jsonify( 
+        time = calendar.timegm(time.localtime()),
+        data = retval )
 
 
 @app.route('/get_new_point', methods=['GET'])

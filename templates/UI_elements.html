@@ -1,7 +1,7 @@
 {% macro button(name, id, status_indicator = false) -%}
     <div class="button_container">
         {% if status_indicator %}
-        <p id="{{ id }}-Status">Status:</p>
+            <p id="{{ id }}-Status">Status:</p>
         {% endif %}
 
         <button type="button" id="{{ id }}" data-loading-text="Working..."
@@ -12,25 +12,53 @@
     </script>
 {%- endmacro %}
 
-{% macro text(name, id, status_indicator = false) -%}
-    
+
+{% macro time_serise_plot(name, id, refresh_interval) -%}
+    <div class="panel panel-primary",>
+        <div class="panel-heading">
+            <b>{{name}}</b>
+        </div>
+        <div class="panel-body" style="height:320px">
+            <div id='plot_window-{{id}}' style="height: 100%"></div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        $( function() {
+            plot_time_series("{{name}}", "{{id}}", {{refresh_interval}});
+        });
+    </script>
 {%- endmacro %}
 
-{% macro text(name, id, status_indicator = false) -%}
-    
-{%- endmacro %}
 
 {% macro panel(name, id, sub_elem_dict) -%}
-
-<div class="panel panel-default">
-    <div class="panel-heading">
-        <b>{{name}}</b>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <b>{{name}}</b>
+        </div>
+        <div class="panel-body">
+            {% for key, item in sub_elem_dict.iteritems() if key != 'id' -%}
+                {% if item['type'] == 'button' %}
+                    {{ button( name=key, id=item['id'],  status_indicator = true) }}
+                {% elif item['type'] == 'time_serise_plot' %}
+                    {{ time_serise_plot(name=key, id=item['id'], refresh_interval = item['refresh interval']) }}
+                {% elif item['type'] == 'input' %}
+                    {{ input(name=key, id=item['id']) }}
+                {% endif %}
+            {%- endfor %}
+        </div>
     </div>
-    <div class="panel-body">
-        {% for key, item in sub_elem_dict.iteritems() if key != 'id' -%}
-            {{key|debug}}
-            {{ button( name=key, id=sub_elem_dict[key]['id'],  status_indicator = true) }}
-        {%- endfor %}
-    </div>
-</div>
 {%- endmacro %}
+
+
+{% macro input(name, id) %}
+    <div class="col-lg-6">
+        <div class="input-group" style = "margin-top:10px; margin-bottom:10px" >
+          <input type="text" class="form-control">
+          <span class="input-group-btn">
+            <button class="btn btn-primary" type="button">{{name}}</button>
+          </span>
+        </div>
+    </div>
+{% endmacro %}
+

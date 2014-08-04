@@ -1,4 +1,5 @@
-function plot_time_serise(name, id) {
+function plot_time_series(name, id, refresh_interval) {
+    console.log('here I am')
     var options = {
         lines:  { show: true },
         points: { show: true },
@@ -6,10 +7,11 @@ function plot_time_serise(name, id) {
         series: { shadowSize: 0 } // Drawing is faster without shadows
     };
 
-    // Initiate a recurring data update
+    //  Initiate a recurring data update
     function start_updating() {
         var data = [];
-        var plot = $.plot("#" + name, data, options);
+        console.log("#plot_window-" + id)
+        var plot = $.plot("#plot_window-" + id, data, options);
         var iteration = 0;
         function fetchData() {
             ++iteration;
@@ -22,16 +24,13 @@ function plot_time_serise(name, id) {
                 plot.draw();
             }
             $.ajax({
-                url: "/get_new_point",
+                url: "/get_point",
                 type: "GET",
                 dataType: "json",
-                data: {
-                    name: name,
-                    id : id
-                },
+                data: { id : id },
                 success: onDataReceived
             });
-            setTimeout(fetchData, 1000);
+            setTimeout(fetchData, refresh_interval*1000 ) ;
         }
         fetchData();
     };

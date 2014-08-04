@@ -11,6 +11,7 @@
         <script src="js/bootstrap.min.js"></script>
         <script language="javascript" type="text/javascript" src="flot/jquery.flot.js"></script>
         <script language="javascript" type="text/javascript" src="./flot/jquery.flot.time.js"></script>
+        <script language="javascript" type="text/javascript" src="./flot/jquery.flot.resize.js"></script>
         <script language="javascript" type="text/javascript" src="./js/real_time_update.js"></script>
         <container>
         <title>OpenLabTools Web Interface</title>
@@ -32,7 +33,7 @@
             <h1>OpenLabTools Web Interface</h1>
         </div>
         {% for key, value in UI_config.iteritems() %}
-        <p>{{ panel( key, UI_config[key]['id'], UI_config[key] ) }}</p>
+            <p>{{ panel( key, UI_config[key]['id'], UI_config[key] ) }}</p>
         {%- endfor %}
         </div>
     </body>
