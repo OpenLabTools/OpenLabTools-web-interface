@@ -21,16 +21,20 @@ def get_config_obj():
     return g.UI_config
 
 
+def xmlrpc_call( func, args ):
+    xmlrpc_server = get_xmlrpc_server()
+    f = getattr(xmlrpc_server, func)
+    if type( args ) is list:
+        retval = f( *args )
+    else: retval = f( args )
+    return retval
+
+
 @app.route( '/button_click' )
 def button_click():
     button_id = request.args.get("id")
     elem_args = get_config_by_id(get_config_obj(), button_id)
-    xmlrpc_server = get_xmlrpc_server()
-    print elem_args['func']
-    f = getattr(xmlrpc_server, elem_args['func'])
-    if type( elem_args['args'] ) is list:
-        retval = f( *elem_args['args'] )
-    else: retval = f( elem_args['args'] )
+    retval = xmlrpc_call( elem_args['func'], elem_args['args'] )
     return jsonify( **{ 'state': retval } )
 
 
