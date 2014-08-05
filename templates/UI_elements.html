@@ -42,6 +42,8 @@
                     {{ button( name=key, id=item['id'],  status_indicator = true) }}
                 {% elif item['type'] == 'time_serise_plot' %}
                     {{ time_serise_plot(name=key, id=item['id'], refresh_interval = item['refresh interval']) }}
+                {% elif item['type'] == 'text' %}
+                    {{ text(name=key, id=item['id'], refresh_interval = item['refresh interval']) }}
                 {% elif item['type'] == 'input' %}
                     {{ input(name=key, id=item['id']) }}
                 {% endif %}
@@ -69,3 +71,22 @@
     </div>
 {% endmacro %}
 
+
+{% macro text(name, id, refresh_interval) %}
+    <div class="jumbotron">
+        <h1 id="{{id}}"></h1>
+        <p>{{name}}</p>
+        <script type="text/javascript">
+            setInterval(
+                function() {
+                    $.getJSON(
+                        "/get_point",
+                        { id: "{{id}}" },
+                        function(data) {
+                            $("#{{id}}").text( toFixed(data.data,3) )
+                        })
+                },
+                {{refresh_interval}}*1000 )
+        </script>
+    </div>
+{% endmacro %}
