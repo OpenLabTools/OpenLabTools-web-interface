@@ -21,24 +21,32 @@ def get_config_obj():
     return g.UI_config
 
 
-def xmlrpc_call( elem_args ):
+def xmlrpc_call( elem_args, extra_args=[] ):
     xmlrpc_server = get_xmlrpc_server()
     func = elem_args['func']
     f = getattr(xmlrpc_server, func)
+
     if 'args' in elem_args.keys():
         args = elem_args['args']
-        if type( args ) is list:
-            retval = f( *args )
-        else: retval = f( args )
-    else: retval = f()
+        if type( args ) is not list:
+            args = [args]
+    else: args = []
+
+    if type( extra_args ) is not list:
+        extra_args = [extra_args]
+
+    args = args + extra_args
+    print args
+    retval = f( *args )
     return retval
 
 
 @app.route( '/button_click' )
 def button_click():
     button_id = request.args.get("id")
+    extra_args = request.args.get( "extra_args", [] )
     elem_args = get_config_by_id(get_config_obj(), button_id)
-    retval = xmlrpc_call( elem_args )
+    retval = xmlrpc_call( elem_args, extra_args )
     return jsonify( **{ 'state': retval } )
 
 
@@ -47,7 +55,7 @@ def tsp_get_point():
     tsp_id = request.args.get("id")
     elem_args = get_config_by_id(get_config_obj(), tsp_id)
     retval = xmlrpc_call( elem_args )
-    return jsonify( 
+    return jsonify(
         time = calendar.timegm(time.localtime()),
         data = retval )
 
@@ -70,7 +78,7 @@ def debug(x):
 @app.route('/html_gen', methods=['GET'])
 def html_gen():
     template_name = 'OpenLabTools_template.html'
-    return render_template( template_name, 
+    return render_template( template_name,
         UI_config = get_config_obj() )
 
 

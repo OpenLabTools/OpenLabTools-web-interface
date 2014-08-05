@@ -54,10 +54,17 @@
 {% macro input(name, id) %}
     <div class="col-lg-6">
         <div class="input-group" style = "margin-top:10px; margin-bottom:10px" >
-          <input type="text" class="form-control">
-          <span class="input-group-btn">
-            <button class="btn btn-primary" type="button">{{name}}</button>
-          </span>
+            <input type="text" class="form-control" id="input-{{ id }}">
+            <span class="input-group-btn">
+                <button type="button" id="{{ id }}" data-loading-text="Working..."
+                    class="btn btn-primary">{{name}}</button>
+                <script>
+                    $('#{{ id }}').click( function(){
+                        var input_val = $('#input-{{ id }}').val();
+                        button_ajax("{{ id }}", false, input_val);
+                    });
+                </script>
+            </span>
         </div>
     </div>
 {% endmacro %}

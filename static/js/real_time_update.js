@@ -37,10 +37,12 @@ function plot_time_series(name, id, refresh_interval) {
     start_updating();
 };
 
-function button_ajax(id, status_indicator) {
+function button_ajax(id, status_indicator, extra_args) {
     var btn = $('#'+id);
     btn.button('loading');
-    $.getJSON( "../button_click", { id: id } )
+    data = { id: id };
+    if (extra_args != undefined) { data.extra_args = extra_args };
+    $.getJSON( "../button_click", data )
     .done( function (json) {
         console.log("State: " + json.state);
         if (status_indicator) {
