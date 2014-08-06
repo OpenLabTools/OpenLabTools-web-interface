@@ -39,6 +39,8 @@
         <div class="panel-body">
             {% for key, item in sub_elem_dict.iteritems() if key != 'id' -%}
                 {% if item['type'] == 'button' %}
+                    {{ button( name=key, id=item['id'],  status_indicator = false) }}
+                {% elif item['type'] == 'button_with_text' %}
                     {{ button( name=key, id=item['id'],  status_indicator = true) }}
                 {% elif item['type'] == 'time_serise_plot' %}
                     {{ time_serise_plot(name=key, id=item['id'], refresh_interval = item['refresh interval']) }}
