@@ -60,15 +60,23 @@
             <span class="input-group-btn">
                 <button type="button" id="{{ id }}" data-loading-text="Working..."
                     class="btn btn-primary">{{name}}</button>
-                <script>
-                    $('#{{ id }}').click( function(){
-                        var input_val = $('#input-{{ id }}').val();
-                        button_ajax("{{ id }}", false, input_val);
-                    });
-                </script>
             </span>
         </div>
     </div>
+    <script>
+        $( function() {
+            $('#{{ id }}').click( function(){
+                var input_val = $('#input-{{ id }}').val();
+                button_ajax("{{ id }}", false, input_val);
+            });
+            $('#input-{{ id }}').keydown( function(event) {
+                if (event.keyCode == 13) {
+                    var input_val = $('#input-{{ id }}').val();
+                    button_ajax("{{ id }}", false, input_val);
+                }
+            });
+        });
+    </script>
 {% endmacro %}
 
 
