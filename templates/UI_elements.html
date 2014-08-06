@@ -1,8 +1,8 @@
 {% macro button(name, id, status_indicator = false) -%}
-    <div class={% if status_indicator %}"col-xs-6"{% else %}"col-xs-3"{% endif %} style="border:1px solid red">
+    <div class={% if status_indicator %}"col-xs-6"{% else %}"col-xs-3"{% endif %}>
         <div style="margin-top: 10px; margin-bottom: 10px">
         <button type="button" id="{{ id }}" data-loading-text="Working..."
-                class="btn btn-primary" style='min-width: 80px; border-radius: 4px 0px 0px 4px;'>{{name}}</button>
+                class="btn btn-primary" style='min-width: 80px; {% if status_indicator %}border-radius: 4px 0px 0px 4px;{% endif %}'>{{name}}</button>
         {% if status_indicator %}
 
         <style type="text/css">
