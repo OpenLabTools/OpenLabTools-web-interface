@@ -14,28 +14,30 @@ function plot_time_series(name, id, refresh_interval) {
         var plot = $.plot("#plot_window-" + id, data, options);
         var iteration = 0;
         function fetchData() {
-            ++iteration;
             function onDataReceived(series) {
                 data.push( [series.time*1000, series.data] );
-                if (iteration > 20) { data.shift() }
+                if (iteration > 20) { data.shift() };
                 //console.log(data)
                 plot.setData([data]);
-                plot.setupGrid()
+                plot.setupGrid();
                 plot.draw();
             }
-            $.ajax({
-                url: "/get_point",
-                type: "GET",
-                dataType: "json",
-                data: { id : id },
-                success: onDataReceived
-            });
-            setTimeout(fetchData, refresh_interval*1000 ) ;
+            if ( $("#pauseIcon-"+id).attr("class").indexOf('pause') > -1 ) {
+                ++iteration;
+                $.ajax({
+                    url: "/get_point",
+                    type: "GET",
+                    dataType: "json",
+                    data: { id : id },
+                    success: onDataReceived
+                })
+            }
+            setTimeout(fetchData, refresh_interval*1000);
         }
         fetchData();
-    };
+    }
     start_updating();
-};
+}
 
 function button_ajax(id, status_indicator, extra_args) {
     var btn = $('#'+id);

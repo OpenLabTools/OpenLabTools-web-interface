@@ -1,5 +1,5 @@
 {% macro button(name, id, status_indicator = false) -%}
-    <div class={% if status_indicator %}"col-xs-6"{% else %}"col-xs-3"{% endif %}>
+    <div class={% if status_indicator %}"col-xs-6"{% else %}"col-xs-2"{% endif %}>
         <div style="margin-top: 10px; margin-bottom: 10px">
         <button type="button" id="{{ id }}" data-loading-text="Working..."
                 class="btn btn-primary" style='min-width: 80px; {% if status_indicator %}border-radius: 4px 0px 0px 4px;{% endif %}'>{{name}}</button>
@@ -36,17 +36,25 @@
         <div class="panel panel-primary",>
             <div class="panel-heading">
                 <b>{{name}}</b>
+                <button id="pause-{{id}}" type="button" class="close">
+                    <span id="pauseIcon-{{id}}" class="glyphicon glyphicon-pause"></span>
+                </button>
             </div>
             <div class="panel-body" id='dynamicheight'>
                 <div id='plot_window-{{id}}' style="height: 100%"></div>
             </div>
         </div>
     </div>
+
     <script type="text/javascript">
         $( function() {
             var div = $('#dynamicheight');
-            var width = div.width();
-            div.css('height', width*0.5);
+            div.css('height', div.width()*0.5);
+            $('#pause-{{id}}').click(function(event) {
+                var icon = $("#pauseIcon-{{id}}");
+                icon.toggleClass('glyphicon-pause');
+                icon.toggleClass('glyphicon-play' );
+            });
             plot_time_series("{{name}}", "{{id}}", {{refresh_interval}});
         });
     </script>
