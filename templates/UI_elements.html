@@ -32,17 +32,21 @@
 
 
 {% macro time_serise_plot(name, id, refresh_interval) -%}
-    <div class="panel panel-primary",>
-        <div class="panel-heading">
-            <b>{{name}}</b>
-        </div>
-        <div class="panel-body" style="height:320px">
-            <div id='plot_window-{{id}}' style="height: 100%"></div>
+    <div class="col-xs-12">
+        <div class="panel panel-primary",>
+            <div class="panel-heading">
+                <b>{{name}}</b>
+            </div>
+            <div class="panel-body" id='dynamicheight'>
+                <div id='plot_window-{{id}}' style="height: 100%"></div>
+            </div>
         </div>
     </div>
-
     <script type="text/javascript">
         $( function() {
+            var div = $('#dynamicheight');
+            var width = div.width();
+            div.css('height', width*0.5);
             plot_time_series("{{name}}", "{{id}}", {{refresh_interval}});
         });
     </script>
@@ -103,20 +107,22 @@
 
 
 {% macro text(name, id, refresh_interval) %}
-    <div class="jumbotron">
-        <h1 id="{{id}}"></h1>
-        <p>{{name}}</p>
-        <script type="text/javascript">
-            setInterval(
-                function() {
-                    $.getJSON(
-                        "/get_point",
-                        { id: "{{id}}" },
-                        function(data) {
-                            $("#{{id}}").text( toFixed(data.data,3) )
-                        })
-                },
-                {{refresh_interval}}*1000 )
-        </script>
+    <div class="col-xs-6">
+        <div class="jumbotron">
+            <h1 id="{{id}}"></h1>
+            <p>{{name}}</p>
+            <script type="text/javascript">
+                setInterval(
+                    function() {
+                        $.getJSON(
+                            "/get_point",
+                            { id: "{{id}}" },
+                            function(data) {
+                                $("#{{id}}").text( toFixed(data.data,3) )
+                            })
+                    },
+                    {{refresh_interval}}*1000 )
+            </script>
+        </div>
     </div>
 {% endmacro %}
