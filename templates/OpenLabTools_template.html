@@ -29,12 +29,19 @@
     </head>
     <body>
         <div class="container">
-        <div class="page-header">
-            <h1>OpenLabTools Web Interface</h1>
+            <div class="page-header">
+                <h1>OpenLabTools Web Interface</h1>
+            </div>
+            {% for key, value in UI_config.iteritems() %}
+                <p>{{ panel( key, UI_config[key]['id'], UI_config[key] ) }}</p>
+            {%- endfor %}
         </div>
-        {% for key, value in UI_config.iteritems() %}
-            <p>{{ panel( key, UI_config[key]['id'], UI_config[key] ) }}</p>
-        {%- endfor %}
-        </div>
+        <footer style="text-align: center; width: 100%;">
+            <p style="color: grey">
+                <b>
+                    <a href="http://openlabtools.eng.cam.ac.uk">OpenLabTools</a> Web Interface
+                </b> Source code available on <a href="https://github.com/LiyouZhou/OpenLabTools-web-interface"><img src="/static/GitHub_Logo.png" alt="GitHub" height="20px" align="text-bottom"></a>
+            </p>
+        </footer>
     </body>
 </html>
