@@ -1,31 +1,34 @@
-{% macro button(name, id, status_indicator = false) -%}
+{% macro button(name, id, status_indicator, config_dict) -%}
     <div class={% if status_indicator %}"col-xs-6"{% else %}"col-xs-2"{% endif %}>
         <div style="margin-top: 10px; margin-bottom: 10px">
         <button type="button" id="{{ id }}" data-loading-text="Working..."
+                data-toggle="tooltip" data-placement="left"
+                title="{{config_dict['func']}}(&quot;{{config_dict['args']}}&quot;)"
                 class="btn btn-primary" style='min-width: 80px; {% if status_indicator %}border-radius: 4px 0px 0px 4px;{% endif %}'>{{name}}</button>
-        {% if status_indicator %}
+            {% if status_indicator %}
 
-        <style type="text/css">
-            div.status_indicator {
-                background-color: #eee;
-                display: inline-block;
-                padding: 6px 12px;
-                margin-bottom: 0px;
-                font-size: 14px;
-                font-weight: 400;
-                text-align: center;
-                vertical-align: middle;
-                border: 1px solid transparent;
-                border-radius: 0px 4px 4px 0px;
-            }
-        </style>
-        <div  class="status_indicator" id="{{ id }}-Status">
-            Status:
+            <style type="text/css">
+                div.status_indicator {
+                    background-color: #eee;
+                    display: inline-block;
+                    padding: 6px 12px;
+                    margin-bottom: 0px;
+                    font-size: 14px;
+                    font-weight: 400;
+                    text-align: center;
+                    vertical-align: middle;
+                    border: 1px solid transparent;
+                    border-radius: 0px 4px 4px 0px;
+                }
+            </style>
+            <div  class="status_indicator" id="{{ id }}-Status">
+                Status:
+            </div>
+            {% endif %}
         </div>
-        {% endif %}
-    </div>
     </div>
     <script>
+        $('#{{ id }}').tooltip({placement: "auto", delay: 800});
         $('#{{ id }}').click( function(){ button_ajax("{{ id }}", true) } );
     </script>
 {%- endmacro %}
@@ -70,15 +73,20 @@
             <row>
             {% for key, item in sub_elem_dict.iteritems() if key != 'id' -%}
                 {% if item['type'] == 'button' %}
-                    {{ button( name=key, id=item['id'],  status_indicator = false) }}
+                    {{ button( key, item['id'],  false, item ) }}
+
                 {% elif item['type'] == 'button_with_text' %}
-                    {{ button( name=key, id=item['id'],  status_indicator = true) }}
+                    {{ button( key, item['id'],  true, item ) }}
+
                 {% elif item['type'] == 'time_serise_plot' %}
-                    {{ time_serise_plot(name=key, id=item['id'], refresh_interval = item['refresh interval']) }}
+                    {{ time_serise_plot( key, item['id'], item['refresh interval']) }}
+
                 {% elif item['type'] == 'text' %}
-                    {{ text(name=key, id=item['id'], refresh_interval = item['refresh interval']) }}
+                    {{ text( key, item['id'], item['refresh interval']) }}
+
                 {% elif item['type'] == 'input' %}
-                    {{ input(name=key, id=item['id']) }}
+                    {{ input( key, item['id']) }}
+
                 {% endif %}
             {%- endfor %}
             </row>

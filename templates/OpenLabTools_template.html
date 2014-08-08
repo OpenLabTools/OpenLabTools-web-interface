@@ -29,8 +29,8 @@
     </head>
     <body>
         <div class="container">
-            <div class="page-header">
-                <h1>OpenLabTools Web Interface</h1>
+            <div class="page-header" style="text-align: center">
+                <h1><b>OpenLabTools Web Interface</b></h1>
             </div>
             {% for key, value in UI_config.iteritems() %}
                 <p>{{ panel( key, UI_config[key]['id'], UI_config[key] ) }}</p>
