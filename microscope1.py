@@ -7,7 +7,7 @@ class Microscope():
         self.set_temp = self.temp
         self.control_temp = True
         port = "/dev/ttyACM0"
-        self.ser = serial.Serial(port)
+        self.ser = serial.Serial(port,19200, timeout=5)
         #possibly change the above line to be relevant to the arduino serial port
 
     def __del__(self):
@@ -24,8 +24,9 @@ class Microscope():
         return float(self.temp)
 
     def set_set_temp(self, temp):
-        self.set_temp = float(temp)
-        return self.set_temp
+        self.ser.write("2")
+        self.ser.write(str(temp))
+        return self.ser.readline();
 
     def get_set_temp(self):
         return self.set_temp
