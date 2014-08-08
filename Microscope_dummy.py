@@ -26,6 +26,6 @@ class Microscope():
         self.control_temp = not self.control_temp
         return self.control_temp
 
-    
+
 if __name__ == "__main__":
     r = Microscope()
