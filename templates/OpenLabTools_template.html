@@ -15,18 +15,9 @@
         <script language="javascript" type="text/javascript" src="./js/real_time_update.js"></script>
         <script language="javascript" type="text/javascript" src="./js/jquery.nouislider.min.js"></script>
         <link href="css/jquery.nouislider.css" rel="stylesheet">
+        <link href="css/OLT-web-interface.css" rel="stylesheet">
 
         <title>OpenLabTools Web Interface</title>
-        <style type="text/css">
-            @media screen {
-            .container {
-                max-width: 730px;
-                }
-            }
-            div.button_container{
-                display: inline-block;
-            }
-        </style>
         <link rel="shortcut icon" href="http://www.cam.ac.uk/profiles/cam/themes/cam/assets/images/favicon.ico">
     </head>
     <body>
@@ -38,8 +29,8 @@
                 <p>{{ panel( key, UI_config[key]['id'], UI_config[key] ) }}</p>
             {%- endfor %}
         </div>
-        <footer style="text-align: center; width: 100%;">
-            <p style="color: grey">
+        <footer>
+            <p class="footer-text">
                 <b>
                     <a href="http://openlabtools.eng.cam.ac.uk">OpenLabTools</a> Web Interface
                 </b> Source code available on <a href="https://github.com/LiyouZhou/OpenLabTools-web-interface"><img src="/static/GitHub_Logo.png" alt="GitHub" height="20px" align="text-bottom"></a>

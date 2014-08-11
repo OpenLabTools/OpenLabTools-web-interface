@@ -1,35 +1,21 @@
 {% macro button(name, id, status_indicator, config_dict) -%}
     <div class={% if status_indicator %}"col-xs-6"{% else %}"col-xs-2"{% endif %}>
-        <div style="margin-top: 10px; margin-bottom: 10px">
-        <button type="button" id="{{ id }}" data-loading-text="Working..."
-                data-toggle="tooltip" data-placement="left"
-                title="{{config_dict['func']}}(&quot;{{config_dict['args']}}&quot;)"
-                class="btn btn-primary" style='min-width: 80px; {% if status_indicator %}border-radius: 4px 0px 0px 4px;{% endif %}'>{{name}}</button>
+        <div class="button_container">
+            <button type="button" id="{{ id }}" data-loading-text="Working..."
+                    data-toggle="tooltip" data-placement="left"
+                    title="{{config_dict['func']}}(&quot;{{config_dict['args']}}&quot;)"
+                    class="btn btn-primary" style='min-width: 80px; {% if status_indicator %}border-radius: 4px 0px 0px 4px;{% endif %}'>{{name}}</button>
             {% if status_indicator %}
-
-            <style type="text/css">
-                div.status_indicator {
-                    background-color: #eee;
-                    display: inline-block;
-                    padding: 6px 12px;
-                    margin-bottom: 0px;
-                    font-size: 14px;
-                    font-weight: 400;
-                    text-align: center;
-                    vertical-align: middle;
-                    border: 1px solid transparent;
-                    border-radius: 0px 4px 4px 0px;
-                }
-            </style>
-            <div  class="status_indicator" id="{{ id }}-Status">
-                Status:
-            </div>
+                <div  class="status_indicator" id="{{ id }}-Status">
+                    Status:
+                </div>
             {% endif %}
         </div>
     </div>
     <script>
-        $('#{{ id }}').tooltip({placement: "auto", delay: 800});
-        $('#{{ id }}').click( function(){ button_ajax("{{ id }}", true) } );
+        var btn = $('#{{ id }}');
+        btn.tooltip({placement: "auto", delay: 800});
+        btn.click( function(){ button_ajax("{{ id }}", true) } );
     </script>
 {%- endmacro %}
 
@@ -103,7 +89,7 @@
 
 {% macro input(name, id) %}
     <div class="col-xs-6">
-        <div class="input-group" style = "margin-top:10px; margin-bottom:10px" >
+        <div class="input-group">
             <input type="text" class="form-control" id="input-{{ id }}">
             <span class="input-group-btn">
                 <button type="button" id="{{ id }}" data-loading-text="Working..."
@@ -152,7 +138,7 @@
 
 {% macro slider(name, config_dict) %}
     <div class="col-xs-6">
-        {{name}}  <input id="output-{{config_dict.id}}" style="text-align:center"></input>
+        {{name}}  <input id="output-{{config_dict.id}}" class="slider-input"></input>
         <br></br>
         <div class="slider" id = "{{config_dict.id}}"></div>
     </div>
@@ -207,8 +193,8 @@
 
 {% macro toggle(name, config_dict) %}
     <div class="col-xs-2">
-        <h5 style="width:50px; display: inline-block">{{name}}</h5>
-        <div class="slider" id = "{{config_dict.id}}" style="width:50px; display: inline-block"></div>
+        <h5 class="toggle-text">{{name}}</h5>
+        <div class="slider toggle" id = "{{config_dict.id}}" style="width:50px; display: inline-block"></div>
     </div>
     <script>
         var slider = $('#{{config_dict.id}}');

@@ -1,0 +1,54 @@
+@media screen {
+.container {
+    max-width: 730px;
+    }
+}
+div.button_container{
+    display: inline-block;
+}
+
+footer{
+    text-align: center;
+    width: 100%;
+}
+
+.footer-text{
+    color: grey;
+}
+
+div.status_indicator {
+    background-color: #eee;
+    display: inline-block;
+    padding: 6px 12px;
+    margin-bottom: 0px;
+    font-size: 14px;
+    font-weight: 400;
+    text-align: center;
+    vertical-align: middle;
+    border: 1px solid transparent;
+    border-radius: 0px 4px 4px 0px;
+}
+
+div.button_container {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+div.input-group {
+    margin-top:10px;
+    margin-bottom:10px;
+}
+
+div.slider-input {
+    text-align:center;
+}
+
+.toggle.text {
+    width:50px;
+    display: inline-block;
+}
+
+div.toggle {
+    width:50px;
+    display: inline-block;
+}
