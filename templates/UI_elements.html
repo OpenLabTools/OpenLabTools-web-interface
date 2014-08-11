@@ -87,6 +87,12 @@
                 {% elif item['type'] == 'input' %}
                     {{ input( key, item['id']) }}
 
+                {% elif item['type'] == 'slider' %}
+                    {{ slider( key, item ) }}
+
+                {% elif item['type'] == 'toggle' %}
+                    {{ toggle( key, item ) }}
+
                 {% endif %}
             {%- endfor %}
             </row>
@@ -141,4 +147,89 @@
             </script>
         </div>
     </div>
+{% endmacro %}
+
+
+{% macro slider(name, config_dict) %}
+    <div class="col-xs-6">
+        {{name}}  <input id="output-{{config_dict.id}}" style="text-align:center"></input>
+        <br></br>
+        <div class="slider" id = "{{config_dict.id}}"></div>
+    </div>
+    <script>
+         // On document ready, initialize noUiSlider.
+        $(function(){
+            var slider = $('#{{config_dict.id}}');
+            var output = $('#output-{{config_dict.id}}');
+            var id = "{{config_dict.id}}";
+            slider.noUiSlider({
+                start: {{config_dict.init_val}},
+                step: {{config_dict.step}},
+                range: {
+                    'min': {{config_dict.min}},
+                    'max': {{config_dict.max}}
+                },
+                connect: "lower",
+                behaviour: 'tap',
+                serialization: {
+                    lower: [
+                      $.Link({
+                        target: output
+                      })
+                    ],
+                    format: {
+                        decimals: 3,
+                        mark: '.'
+                    }
+                }
+            });
+
+            slider.on( "set", function() {
+                console.log("setting value")
+                value = slider.val();
+                $.getJSON( "../button_click", { id: id, extra_args: value } )
+                .done( function (json) {
+                    output.css('background-color', 'green');
+                    output.css('color', 'white');
+                })
+                .fail( function () {
+                    alert("Request failed!");
+                    output.css('background-color', 'red');
+                    output.css('color', 'white');
+                })
+            })
+
+            slider.val(slider.val(), { set: true });
+        });
+    </script>
+{% endmacro %}
+
+
+{% macro toggle(name, config_dict) %}
+    <div class="col-xs-2">
+        <h5 style="width:50px; display: inline-block">{{name}}</h5>
+        <div class="slider" id = "{{config_dict.id}}" style="width:50px; display: inline-block"></div>
+    </div>
+    <script>
+        var slider = $('#{{config_dict.id}}');
+        var id = "{{config_dict.id}}";
+
+        slider.noUiSlider({
+            start: 0,
+            range: {
+                'min': [0, 1],
+                'max': 1
+            },
+            connect: "lower"
+        });
+
+        slider.on( "set", function() {
+            value = slider.val()
+            $.getJSON( "../button_click", { id: id, extra_args:value } )
+            .fail( function() {
+                alert("Request Failed")
+                slider.val( 1-value )
+            })
+        });
+    </script>
 {% endmacro %}
