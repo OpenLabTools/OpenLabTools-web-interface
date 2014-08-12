@@ -3,8 +3,10 @@
 from flask import Flask, render_template, request, jsonify, g
 import calendar, time, random, xmlrpclib
 from OLT_config_parser import get_config, get_config_by_id
+from flask.ext.cache import Cache
 
 app = Flask(__name__)
+cache = Cache(app,config={'CACHE_TYPE': 'simple'})
 
 
 def get_xmlrpc_server():
@@ -21,10 +23,11 @@ def get_config_obj():
     return g.UI_config
 
 
+
 def xmlrpc_call( elem_args, extra_args=[] ):
+
     xmlrpc_server = get_xmlrpc_server()
-    func = elem_args['func']
-    f = getattr(xmlrpc_server, func)
+
 
     if 'args' in elem_args.keys():
         args = elem_args['args']
@@ -35,10 +38,18 @@ def xmlrpc_call( elem_args, extra_args=[] ):
     if type( extra_args ) is not list:
         extra_args = [extra_args]
 
-    args = args + extra_args
-    print args
-    retval = f( *args )
-    return retval
+    args = tuple(args + extra_args)
+
+    func = elem_args['func']
+
+    @cache.memoize(1)
+    def cachable( func, args ):
+        """This function construct allow caching by matching func, args"""
+        f = getattr(xmlrpc_server, func)
+        retval = f( *args )
+        return retval
+
+    return cachable( func, args )
 
 
 @app.route( '/button_click' )
