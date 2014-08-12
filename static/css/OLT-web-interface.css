@@ -16,7 +16,7 @@ footer{
     color: grey;
 }
 
-div.status_indicator {
+div.status-indicator {
     background-color: #eee;
     display: inline-block;
     padding: 6px 12px;
@@ -29,7 +29,7 @@ div.status_indicator {
     border-radius: 0px 4px 4px 0px;
 }
 
-div.button_container {
+div.button-container {
     margin-top: 10px;
     margin-bottom: 10px;
 }
@@ -51,4 +51,16 @@ div.slider-input {
 div.toggle {
     width:50px;
     display: inline-block;
+}
+
+div.plot-window {
+    height: 100%
+}
+
+.btn {
+    min-width: 80px;
+}
+
+.btn-indicator {
+    border-radius: 4px 0px 0px 4px;
 }

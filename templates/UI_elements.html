@@ -1,12 +1,14 @@
 {% macro button(name, id, status_indicator, config_dict) -%}
     <div class={% if status_indicator %}"col-xs-6"{% else %}"col-xs-2"{% endif %}>
-        <div class="button_container">
-            <button type="button" id="{{ id }}" data-loading-text="Working..."
-                    data-toggle="tooltip" data-placement="left"
+        <div class="button-container">
+            <button type="button"
+                    id="{{ id }}"
+                    data-loading-text="Working..."
+                    data-toggle="tooltip"
                     title="{{config_dict['func']}}(&quot;{{config_dict['args']}}&quot;)"
-                    class="btn btn-primary" style='min-width: 80px; {% if status_indicator %}border-radius: 4px 0px 0px 4px;{% endif %}'>{{name}}</button>
+                    class="btn btn-primary {% if status_indicator %}btn-indicator{% endif %}">{{name}}</button>
             {% if status_indicator %}
-                <div  class="status_indicator" id="{{ id }}-Status">
+                <div  class="status-indicator" id="{{ id }}-Status">
                     Status:
                 </div>
             {% endif %}
@@ -30,7 +32,7 @@
                 </button>
             </div>
             <div class="panel-body" id='dynamicheight'>
-                <div id='plot_window-{{id}}' style="height: 100%"></div>
+                <div id='plot_window-{{id}}' class='plot-window'></div>
             </div>
         </div>
     </div>
@@ -175,7 +177,7 @@
                 value = slider.val();
                 $.getJSON( "../button_click", { id: id, extra_args: value } )
                 .done( function (json) {
-                    output.css('background-color', 'green');
+                    output.css('background-color', 'DodgerBlue');
                     output.css('color', 'white');
                 })
                 .fail( function () {
@@ -194,7 +196,7 @@
 {% macro toggle(name, config_dict) %}
     <div class="col-xs-2">
         <h5 class="toggle-text">{{name}}</h5>
-        <div class="slider toggle" id = "{{config_dict.id}}" style="width:50px; display: inline-block"></div>
+        <div class="slider toggle" id = "{{config_dict.id}}" ></div>
     </div>
     <script>
         var slider = $('#{{config_dict.id}}');
