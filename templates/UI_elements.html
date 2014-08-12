@@ -86,6 +86,9 @@
                 {% elif item['type'] == 'toggle' %}
                     {{ toggle( key, item ) }}
 
+                {% elif item['type'] == 'dial' %}
+                    {{ dial( key, item ) }}
+
                 {% endif %}
             {%- endfor %}
             </row>
@@ -226,5 +229,32 @@
                 slider.val( 1-value )
             })
         });
+    </script>
+{% endmacro %}
+
+{% macro dial(name, config_dict) %}
+    {% set id = config_dict['id'] %}
+    {% set ref_int = config_dict['refresh interval'] %}
+    <div class="col-xs-6">
+        <h3 class="dial-title">{{name}}</h3>
+        <div class="centering-container">
+            <input type="text" class="dial" id="{{id}}">
+        </div>
+    </div>
+    <script>
+        $( function() {
+            $(".dial").knob({
+                "min": {{config_dict.min}},
+                "max": {{config_dict.max}},
+                "readOnly": true,
+            });
+            setInterval( function() {
+                $.getJSON(
+                    "/get_point",
+                    { id: "{{id}}" },
+                    function(data) {
+                        $("#{{id}}").val(data.data)
+                    } )
+            }, {{ref_int}}*1000 )});
     </script>
 {% endmacro %}

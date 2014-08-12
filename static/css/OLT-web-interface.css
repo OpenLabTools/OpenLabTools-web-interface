@@ -68,3 +68,16 @@ div.plot-window {
 .noUi-connect {
     background-color: DodgerBlue
 }
+
+.dial-title {
+    text-align: center;
+    width: 100%;
+}
+.dial {
+    width: 100%;
+    text-align: center;
+}
+
+div.centering-container {
+    text-align: center ;
+}
