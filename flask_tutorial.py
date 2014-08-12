@@ -6,7 +6,7 @@ from OLT_config_parser import get_config, get_config_by_id
 from flask.ext.cache import Cache
 
 app = Flask(__name__)
-cache = Cache(app,config={'CACHE_TYPE': 'simple'})
+cache = Cache(app,config={'CACHE_TYPE': 'memcached'})
 
 
 def get_xmlrpc_server():
