@@ -7,11 +7,11 @@
                     data-toggle="tooltip"
                     title="{{config_dict['func']}}(&quot;{{config_dict['args']}}&quot;)"
                     class="btn btn-primary {% if status_indicator %}btn-indicator{% endif %}">{{name}}</button>
-            {% if status_indicator %}
+            {% if status_indicator -%}
                 <div  class="status-indicator" id="{{ id }}-Status">
                     Status:
                 </div>
-            {% endif %}
+            {%- endif %}
         </div>
     </div>
     <script>
@@ -27,7 +27,7 @@
         <div class="panel panel-primary",>
             <div class="panel-heading">
                 <b>{{name}}</b>
-                <button id="pause-{{id}}" type="button" class="close">
+                <button id="pause-{{id}}" type="button" class="close" title="Pause">
                     <span id="pauseIcon-{{id}}" class="glyphicon glyphicon-pause"></span>
                 </button>
             </div>
@@ -43,8 +43,14 @@
             div.css('height', div.width()*0.5);
             $('#pause-{{id}}').click(function(event) {
                 var icon = $("#pauseIcon-{{id}}");
+                var btn = $("#pause-{{id}}");
                 icon.toggleClass('glyphicon-pause');
                 icon.toggleClass('glyphicon-play' );
+                if (icon.hasClass('glyphicon-pause')) {
+                    btn.attr('title', 'Pause');
+                } else {
+                    btn.attr('title', 'Continue');
+                }
             });
             plot_time_series("{{name}}", "{{id}}", {{refresh_interval}});
         });
@@ -73,7 +79,7 @@
                     {{ text( key, item['id'], item['refresh interval']) }}
 
                 {% elif item['type'] == 'input' %}
-                    {{ input( key, item['id']) }}
+                    {{ input( key, item ) }}
 
                 {% elif item['type'] == 'slider' %}
                     {{ slider( key, item ) }}
@@ -89,13 +95,15 @@
 {%- endmacro %}
 
 
-{% macro input(name, id) %}
+{% macro input(name, config_dict) %}
+    {% set id = config_dict['id'] %}
     <div class="col-xs-6">
         <div class="input-group">
             <input type="text" class="form-control" id="input-{{ id }}">
             <span class="input-group-btn">
                 <button type="button" id="{{ id }}" data-loading-text="Working..."
-                    class="btn btn-primary">{{name}}</button>
+                        title="{{config_dict['func']}}(&quot;{{config_dict['args']}}&quot;)"
+                        class="btn btn-primary">{{name}}</button>
             </span>
         </div>
     </div>
