@@ -16,7 +16,6 @@
     </div>
     <script>
         var btn = $('#{{ id }}');
-        btn.tooltip({placement: "auto", delay: 800});
         btn.click( function(){ button_ajax("{{ id }}", true) } );
     </script>
 {%- endmacro %}
