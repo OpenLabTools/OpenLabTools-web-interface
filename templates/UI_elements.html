@@ -183,7 +183,6 @@
             });
 
             slider.on( "set", function() {
-                console.log("setting value")
                 value = slider.val();
                 $.getJSON( "../button_click", { id: id, extra_args: value } )
                 .done( function (json) {

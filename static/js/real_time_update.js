@@ -1,5 +1,4 @@
 function plot_time_series(name, id, refresh_interval) {
-    console.log('here I am')
     var options = {
         lines:  { show: true },
         points: { show: true },
@@ -10,7 +9,6 @@ function plot_time_series(name, id, refresh_interval) {
     //  Initiate a recurring data update
     function start_updating() {
         var data = [];
-        console.log("#plot_window-" + id)
         var plot = $.plot("#plot_window-" + id, data, options);
         var iteration = 0;
         function fetchData() {
