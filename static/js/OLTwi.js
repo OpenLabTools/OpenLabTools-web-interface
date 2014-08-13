@@ -44,7 +44,6 @@ function button_ajax(id, status_indicator, extra_args) {
     if (extra_args != undefined) { data.extra_args = extra_args };
     $.getJSON( "../button_click", data )
     .done( function (json) {
-        console.log("State: " + json.state);
         if (status_indicator) {
             $("#"+ id + "-Status").text("Status: " + json.state);
         }
