@@ -48,7 +48,7 @@
                                     <li><a href="/html_gen?id={{group_config['id']}}" target="_self">All devices in {{group_name}}</a></li>
 
                                     {% for device_name, device_config in group_config.iteritems() if device_name not in ['id', 'config_file'] %}
-                                        <li><a href="/html_gen?id={{device_config['id']}}" target="_self">{{device_name}}</a></li>
+                                        <li><a href="/html_gen?device_id={{device_config['id']}}" target="_self">{{device_name}}</a></li>
                                     {% endfor %}
                                 {% endfor %}
                             </ul>

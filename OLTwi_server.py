@@ -18,25 +18,16 @@ def get_xmlrpc_server():
 
 
 def get_UI_config_obj():
-    if 'config_folder' in app.config.keys():
-        config_folder = app.config['config_folder']
-        path.join(config_folder, 'cluster_config.ini')
-        UI_config_name = path.join(config_folder, 'UI_config.ini')
-    else:
-        UI_config_name = 'OLT_config_test.ini'
-    if not hasattr(g, 'UI_config'):
-        g.UI_config = get_config(UI_config_name)
-    return g.UI_config
+    device_id = request.args['device_id']
+    print device_id
+    device_config = get_config_by_id( get_cluster_config_obj(), device_id )
+    UI_config = get_config_by_fn( device_config['config_file'] )
+    return UI_config
 
 
 def get_cluster_config_obj():
-    if 'config_folder' in app.config.keys():
-        config_folder = app.config['config_folder']
-        cluster_config_name = path.join(config_folder, 'cluster_config.ini')
-    else:
-        cluster_config_name = 'OLT_cluster_config.ini'
     if not hasattr(g, 'cluster_config'):
-        g.cluster_config = get_config(cluster_config_name)
+        g.cluster_config = get_config(app.config['cluster_config_fn'])
     return g.cluster_config
 
 
@@ -107,8 +98,8 @@ def debug(x):
 
 @app.route('/html_gen', methods=['GET'])
 def html_gen():
-    if 'id' in request.args.keys():
-        device_id = request.args['id']
+    if 'device_id' in request.args.keys():
+        device_id = request.args['device_id']
         device_config = get_config_by_id( get_cluster_config_obj(), device_id )
         UI_config = get_config_by_fn( device_config['config_file'] )
         template_name = ['OpenLabTools_template.html']
@@ -117,20 +108,14 @@ def html_gen():
             cluster_config = get_cluster_config_obj(),
             device_id = device_id )
     else:
-        if 'config_folder' in app.config.keys():
-            template_name = ['OpenLabTools_template.html']
-            return render_template( template_name,
-                UI_config = get_UI_config_obj(), cluster_config = get_cluster_config_obj() )
-        else:
-            return render_template( "device_picker.html",
-                cluster_config = get_cluster_config_obj())
+        return render_template( "device_picker.html",
+            cluster_config = get_cluster_config_obj())
 
 
 if __name__ == "__main__":
     import sys
-
-    if len(sys.argv) == 2:
-        config_folder = sys.argv[1]
-        app.config.update( dict( config_folder=config_folder ))
+    if len(sys.argv) == 2: cluster_config_fn = sys.argv[1]
+    else: cluster_config_fn = './OLT_cluster_config.ini'
+    app.config.update( dict( cluster_config_fn=cluster_config_fn ))
     app.debug = True
     app.run(host='0.0.0.0')
