@@ -6,7 +6,7 @@ class Microscope():
         self.temp = 1
         self.set_temp = self.temp
         self.control_temp = True
-        self.ser = serial.Serial(port, 9600, timeout=3)
+        self.ser = serial.Serial(serial_port, 9600, timeout=3)
         #possibly change the above line to be relevant to the arduino serial port
 
     def __del__(self):
