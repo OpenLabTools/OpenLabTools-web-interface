@@ -2,9 +2,8 @@
 # -*- coding: utf-8 -*-
 import serial
 class Microscope():
-    def __init__(self):
+    def __init__(self, serial_port = "/dev/ttyACM0"):
         self.brightness = 0
-        port = "/dev/ttyACM1"
         self.ser = serial.Serial(port, 9600, timeout=3)
         #possibly change the above line to be relevant to the arduino serial port
 
@@ -12,7 +11,7 @@ class Microscope():
         self.ser.close();
         #destructing the class, closing down
         #the serial connection to avoid things getting bad
-   
+
     def set_brightness(self, brightness):
         print "set_brightness"
         self.brightness = brightness

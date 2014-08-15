@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 from random import random
 class Microscope():
-    def __init__(self):
+    def __init__(self, serial = '/dev/ttyARM0'):
         self.temp = 1
         self.set_temp = self.temp
         self.control_temp = True

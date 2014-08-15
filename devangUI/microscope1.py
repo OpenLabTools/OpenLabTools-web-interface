@@ -2,11 +2,10 @@
 # -*- coding: utf-8 -*-
 import serial
 class Microscope():
-    def __init__(self):
+    def __init__(self, serial_port = "/dev/ttyACM0"):
         self.temp = 1
         self.set_temp = self.temp
         self.control_temp = True
-        port = "/dev/ttyACM0"
         self.ser = serial.Serial(port, 9600, timeout=3)
         #possibly change the above line to be relevant to the arduino serial port
 
