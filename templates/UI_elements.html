@@ -184,7 +184,7 @@
 
             slider.on( "set", function() {
                 value = slider.val();
-                $.getJSON( "../button_click", { id: id, extra_args: value } )
+                $.getJSON( "../button_click", { id: id, extra_args: value, device_id: "{{device_id}}" } )
                 .done( function (json) {
                     output.css('background-color', 'DodgerBlue');
                     output.css('color', 'white');

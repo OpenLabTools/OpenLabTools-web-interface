@@ -21,7 +21,7 @@ if __name__ == "__main__":
     else:
         microscope_def_fn = 'defaultUI/Microscope_dummy.py'
         port = 8000
-        serial_port = '/dev/ttyARM0'
+        serial_port = '/dev/ttyACM0'
 
     microscope_def_fn = os.path.abspath(microscope_def_fn)
     sys.path.append(os.path.dirname(microscope_def_fn))
@@ -30,7 +30,7 @@ if __name__ == "__main__":
     Microscope = m.Microscope
 
     # Create server
-    server = SimpleXMLRPCServer(("localhost", port), requestHandler=RequestHandler)
+    server = SimpleXMLRPCServer(("localhost", int(port)), requestHandler=RequestHandler)
     server.register_introspection_functions()
 
     # Register an instance; all the methods of the instance are

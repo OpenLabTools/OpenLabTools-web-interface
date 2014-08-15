@@ -11,15 +11,14 @@ cache = Cache(app,config={'CACHE_TYPE': 'memcached'})
 
 
 def get_xmlrpc_server():
-    if not hasattr(g, 'xmlrpc_server'):
-        address = "http://localhost:8000/RPC2"
-        g.xmlrpc_server = xmlrpclib.ServerProxy( address )
-    return g.xmlrpc_server
+    device_id = request.args['device_id']
+    device_config = get_config_by_id( get_cluster_config_obj(), device_id )
+    address = device_config['ip']
+    return xmlrpclib.ServerProxy( 'http://' + address + '/RPC2' )
 
 
 def get_UI_config_obj():
     device_id = request.args['device_id']
-    print device_id
     device_config = get_config_by_id( get_cluster_config_obj(), device_id )
     UI_config = get_config_by_fn( device_config['config_file'] )
     return UI_config
@@ -66,6 +65,7 @@ def xmlrpc_call( elem_args, extra_args=[] ):
 def button_click():
     button_id = request.args.get("id")
     extra_args = request.args.get( "extra_args", [] )
+    device_id = request.args.get( "device_id" )
     elem_args = get_config_by_id( get_UI_config_obj(), button_id )
     retval = xmlrpc_call( elem_args, extra_args )
     return jsonify( **{ 'state': retval } )
