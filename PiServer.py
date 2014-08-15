@@ -11,21 +11,31 @@ class RequestHandler(SimpleXMLRPCRequestHandler):
 
 
 if __name__ == "__main__":
-    try:
-        serial.Serial('/dev/ttyACM0').close()
-        from microscope1 import Microscope
-    except:
-        from Microscope_dummy import Microscope
 
- #   from zaynUI.microscopeLEDBrightness import Microscope
+    import os
+    import sys
+    if len(sys.argv) == 4:
+        microscope_def_fn = sys.argv[1]
+        port = sys.argv[2]
+        serial_port = sys.argv[3]
+    else:
+        microscope_def_fn = 'defaultUI/Microscope_dummy.py'
+        port = 8000
+        serial_port = '/dev/ttyARM0'
+
+    microscope_def_fn = os.path.abspath(microscope_def_fn)
+    sys.path.append(os.path.dirname(microscope_def_fn))
+
+    m = __import__(os.path.basename(microscope_def_fn).split('.')[0])
+    Microscope = m.Microscope
 
     # Create server
-    server = SimpleXMLRPCServer(("localhost", 8000), requestHandler=RequestHandler)
+    server = SimpleXMLRPCServer(("localhost", port), requestHandler=RequestHandler)
     server.register_introspection_functions()
 
     # Register an instance; all the methods of the instance are
     # published as XML-RPC methods
-    server.register_instance( Microscope() )
+    server.register_instance( Microscope(serial_port) )
 
     # Run the server's main loop
     server.serve_forever()
