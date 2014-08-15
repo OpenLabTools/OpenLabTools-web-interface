@@ -81,3 +81,5 @@ div.plot-window {
 div.centering-container {
     text-align: center ;
 }
+
+body { padding-bottom: 70px; }

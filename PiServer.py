@@ -17,6 +17,8 @@ if __name__ == "__main__":
     except:
         from Microscope_dummy import Microscope
 
+ #   from zaynUI.microscopeLEDBrightness import Microscope
+
     # Create server
     server = SimpleXMLRPCServer(("localhost", 8000), requestHandler=RequestHandler)
     server.register_introspection_functions()

@@ -25,9 +25,6 @@
             <div class="page-header" style="text-align: center">
                 <h1><b>OpenLabTools Web Interface</b></h1>
             </div>
-            {% for key, value in UI_config.iteritems() %}
-                {{ panel( key, UI_config[key]['id'], UI_config[key] ) }}
-            {%- endfor %}
         </div>
         <footer>
             <p class="footer-text">

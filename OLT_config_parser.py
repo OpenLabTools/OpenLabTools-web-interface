@@ -14,15 +14,17 @@ def get_config(config_fn):
             if type(elem_args) is Section:
                 if "id" not in elem_args.keys():
                     elem_args["id"] = str(uuid4())[:id_len]
-        
+
     config.write()
     return config
 
 
 def get_config_by_id(config, elem_id):
     for panel_name, panel_elems in config.items():
+        if panel_elems['id'] == elem_id:
+            return panel_elems
         for elem_name, elem_args in panel_elems.items():
-            if elem_name != 'id':
+            if elem_name not in ['id', 'config_file']:
                 if elem_args['id'] == elem_id:
                     return elem_args
     return None
