@@ -102,7 +102,7 @@ def html_gen():
         device_id = request.args['device_id']
         device_config = get_config_by_id( get_cluster_config_obj(), device_id )
         UI_config = get_config_by_fn( device_config['config_file'] )
-        template_name = ['OpenLabTools_template.html']
+        template_name = ['web_interface.html']
         return render_template( template_name,
             UI_config = UI_config,
             cluster_config = get_cluster_config_obj(),

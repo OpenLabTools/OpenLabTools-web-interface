@@ -7,37 +7,22 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link href="css/bootstrap.min.css" rel="stylesheet">
-        <link href="css/jquery.nouislider.css" rel="stylesheet">
-        <link href="css/OLT-web-interface.css" rel="stylesheet">
         <script src="js/jquery-1.11.1.min.js"></script>
         <script src="js/bootstrap.min.js"></script>
-        <script language="javascript" type="text/javascript" src="flot/jquery.flot.js"></script>
-        <script language="javascript" type="text/javascript" src="./flot/jquery.flot.time.js"></script>
-        <script language="javascript" type="text/javascript" src="./flot/jquery.flot.resize.js"></script>
-        <script language="javascript" type="text/javascript" src="./js/OLTwi.js"></script>
-        <script language="javascript" type="text/javascript" src="./js/jquery.nouislider.min.js"></script>
-        <script type="text/javascript" src="./js/jquery.knob.min.js"></script>
-        <title>OpenLabTools Web Interface</title>
         <link rel="shortcut icon" href="http://www.cam.ac.uk/profiles/cam/themes/cam/assets/images/favicon.ico">
-        <script type="text/javascript">
-            (function(jQuery){
-                var oPost = jQuery.ajax;
-                jQuery.ajax = function() {
-                    arguments[0]['data']['device_id'] = "{{device_id}}";
-                    return oPost.apply($, Array.prototype.slice.apply(arguments));
-                };
-            })(jQuery)
-        </script>
+        <link href="css/OLT-web-interface.css" rel="stylesheet">
+        {% block imports %}
+        {% endblock imports %}
     </head>
     <body>
         <div class="container">
             <div class="page-header" style="text-align: center">
                 <h1><b>OpenLabTools Web Interface</b></h1>
             </div>
-            {% for key, value in UI_config.iteritems() %}
-                {{ panel( key, UI_config[key]['id'], UI_config[key] ) }}
-            {%- endfor %}
+            {% block main %}
+            {% endblock main %}
         </div>
+
         <footer>
             <p class="footer-text">
                 <b>
