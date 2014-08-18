@@ -23,7 +23,7 @@ class Microscope():
         self.brightness=self.ser.readline()
         return int(self.brightness)
 
-	def test_LED(self):
-		print "Testing LED"
-		self.ser.write("3\n")
+    def test_LED(self):
+        print "Testing LED"
+        self.ser.write("3\n")
         return 0
