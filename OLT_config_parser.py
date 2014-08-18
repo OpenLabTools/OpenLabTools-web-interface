@@ -22,9 +22,11 @@ def get_config(config_fn):
 def get_config_by_id(config, elem_id):
     for panel_name, panel_elems in config.items():
         if panel_elems['id'] == elem_id:
+            panel_elems['name'] = panel_name
             return panel_elems
         for elem_name, elem_args in panel_elems.items():
             if elem_name not in ['id', 'config_file']:
                 if elem_args['id'] == elem_id:
+                    elem_args['name'] = elem_name
                     return elem_args
     return None

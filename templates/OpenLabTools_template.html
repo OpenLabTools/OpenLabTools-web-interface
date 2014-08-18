@@ -48,6 +48,16 @@
                             </ul>
                         </li>
                     </ul>
+                    <p class='navbar-text navbar-right'>
+                        {% if current_device_name is defined %}
+                            Current Device: <b>{{current_device_name}}</b>
+                        {% else %}
+                            Please pick a device.
+                        {% endif %}
+                        {% if device_id is defined %}
+                            Device ID: <b>{{device_id}}</b>
+                        {% endif %}
+                    </p>
                 </div>
             </div>
         </nav>

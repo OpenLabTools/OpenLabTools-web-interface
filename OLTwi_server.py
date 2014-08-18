@@ -106,7 +106,8 @@ def html_gen():
         return render_template( template_name,
             UI_config = UI_config,
             cluster_config = get_cluster_config_obj(),
-            device_id = device_id )
+            device_id = device_id,
+            current_device_name = device_config['name'] )
     else:
         return render_template( "device_picker.html",
             cluster_config = get_cluster_config_obj())
