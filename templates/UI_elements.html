@@ -89,6 +89,9 @@
                 {% elif item['type'] == 'dial' %}
                     {{ dial( key, item ) }}
 
+                {% elif item['type'] == 'image' %}
+                    {{ image( key, item ) }}
+
                 {% endif %}
             {%- endfor %}
             </row>
@@ -255,5 +258,18 @@
                         $("#{{id}}").val(data.data)
                     } )
             }, {{ref_int}}*1000 )});
+    </script>
+{% endmacro %}
+
+{% macro image(name, config_dict) %}
+    {% set id = config_dict['id'] %}
+    <div class="col-xs-6">
+        <img src='/get_image?id={{id}}' id='{{id}}' alt='whaat'>
+    </div>
+    <script type="text/javascript">
+        var img = $('#{{id}}');
+        setInterval( function() {
+                img.attr( "src", "/get_image?id={{id}}&device_id={{device_id}}&time=" + new Date().getTime() );
+            }, 3000)
     </script>
 {% endmacro %}

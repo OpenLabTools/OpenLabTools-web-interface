@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from flask import Flask, render_template, request, jsonify, g
+from flask import Flask, render_template, request, jsonify, g, Response
 import calendar, time, random, xmlrpclib
 from OLT_config_parser import get_config, get_config_by_id
 from flask.ext.cache import Cache
@@ -111,6 +111,18 @@ def html_gen():
     else:
         return render_template( "device_picker.html",
             cluster_config = get_cluster_config_obj())
+
+
+@app.route('/get_image')
+def get_image():
+    print "get_image"
+    button_id = request.args.get("id")
+    print button_id
+    extra_args = request.args.get( "extra_args", [] )
+    device_id = request.args.get( "device_id" )
+    elem_args = get_config_by_id( get_UI_config_obj(), button_id )
+    retval = xmlrpc_call( elem_args, extra_args )
+    return Response( retval.data, mimetype='image/jpeg' )
 
 
 if __name__ == "__main__":
