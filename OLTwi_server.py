@@ -87,14 +87,6 @@ def tsp_get_point():
         data = retval )
 
 
-@app.route('/get_new_point', methods=['GET'])
-def get_new_point():
-    return jsonify(**{
-        "time" : calendar.timegm(time.localtime()),
-        "data" : (random.random() - 0.5) * 60
-    })
-
-
 @app.template_filter('debug')
 def debug(x):
     """print content to console from jinja2 templates."""
