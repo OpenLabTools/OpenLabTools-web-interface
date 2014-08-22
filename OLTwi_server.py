@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from flask import Flask, render_template, request, jsonify, g, Response
+from flask import Flask, render_template, request, jsonify, g, Response, abort
 import calendar, time, random, xmlrpclib
 from OLT_config_parser import get_config, get_config_by_id
 from flask.ext.cache import Cache
@@ -14,6 +14,7 @@ def get_xmlrpc_server():
     device_id = request.args['device_id']
     device_config = get_config_by_id( get_cluster_config_obj(), device_id )
     address = device_config['ip']
+    print address
     return xmlrpclib.ServerProxy( 'http://' + address + '/RPC2' )
 
 
@@ -51,11 +52,16 @@ def xmlrpc_call( elem_args, extra_args=[] ):
 
     func = elem_args['func']
 
-    @cache.memoize(1)
+    #@cache.memoize(1)
     def cachable( func, args ):
         """This function construct allow caching by matching func, args"""
         f = getattr(xmlrpc_server, func)
-        retval = f( *args )
+        retval = None
+        try:
+            retval = f( *args )
+        except:
+            print "Unexpected error:", sys.exc_info()[0]
+            abort(401)
         return retval
 
     return cachable( func, args )
