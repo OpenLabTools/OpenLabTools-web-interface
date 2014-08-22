@@ -268,8 +268,19 @@
     </div>
     <script type="text/javascript">
         var img = $('#{{id}}');
-        setInterval( function() {
-                img.attr( "src", "/get_image?id={{id}}&device_id={{device_id}}&time=" + new Date().getTime() );
-            }, 3000)
+        img.on({
+            load: function () {
+                console.log('loaded')
+                setTimeout( function () {
+                    img.attr( "src", "/get_image?id={{id}}&device_id={{device_id}}&time=" + new Date().getTime() );
+                }, 80 )
+            },
+            error: function () {
+                console.log('error')
+                setTimeout( function () {
+                    img.attr( "src", "/get_image?id={{id}}&device_id={{device_id}}&time=" + new Date().getTime() );
+                }, 100 )
+            }
+        })
     </script>
 {% endmacro %}
