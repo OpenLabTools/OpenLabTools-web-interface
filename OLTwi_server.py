@@ -14,7 +14,6 @@ def get_xmlrpc_server():
     device_id = request.args['device_id']
     device_config = get_config_by_id( get_cluster_config_obj(), device_id )
     address = device_config['ip']
-    print address
     return xmlrpclib.ServerProxy( 'http://' + address + '/RPC2' )
 
 
@@ -61,30 +60,30 @@ def xmlrpc_call( elem_args, extra_args=[] ):
             retval = f( *args )
         except:
             print "Unexpected error:", sys.exc_info()[0]
-            abort(401)
+            abort(500)
         return retval
 
     return cachable( func, args )
 
 
+@app.route( '/get_point'    )
+@app.route( '/get_image'    )
 @app.route( '/button_click' )
 def button_click():
-    button_id = request.args.get("id")
+    button_id  = request.args.get("id")
+    device_id  = request.args.get( "device_id" )
     extra_args = request.args.get( "extra_args", [] )
-    device_id = request.args.get( "device_id" )
-    elem_args = get_config_by_id( get_UI_config_obj(), button_id )
-    retval = xmlrpc_call( elem_args, extra_args )
-    return jsonify( **{ 'state': retval } )
-
-
-@app.route('/get_point')
-def tsp_get_point():
-    tsp_id = request.args.get("id")
-    elem_args = get_config_by_id( get_UI_config_obj(), tsp_id )
-    retval = xmlrpc_call( elem_args )
-    return jsonify(
-        time = calendar.timegm(time.localtime()),
-        data = retval )
+    elem_args  = get_config_by_id( get_UI_config_obj(), button_id )
+    retval     = xmlrpc_call( elem_args, extra_args )
+    if   request.path == '/button_click':
+        return jsonify( state = retval )
+    elif request.path == '/get_image':
+        return Response( retval.data, mimetype='image/jpeg' )
+    elif request.path == '/get_point':
+        return jsonify(
+            time = calendar.timegm(time.localtime()),
+            data = retval )
+    else: abort(404)
 
 
 @app.template_filter('debug')
@@ -109,18 +108,6 @@ def html_gen():
     else:
         return render_template( "device_picker.html",
             cluster_config = get_cluster_config_obj())
-
-
-@app.route('/get_image')
-def get_image():
-    print "get_image"
-    button_id = request.args.get("id")
-    print button_id
-    extra_args = request.args.get( "extra_args", [] )
-    device_id = request.args.get( "device_id" )
-    elem_args = get_config_by_id( get_UI_config_obj(), button_id )
-    retval = xmlrpc_call( elem_args, extra_args )
-    return Response( retval.data, mimetype='image/jpeg' )
 
 
 if __name__ == "__main__":
