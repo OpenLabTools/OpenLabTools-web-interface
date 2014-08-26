@@ -14,7 +14,7 @@ def get_xmlrpc_server():
     device_id = request.args['device_id']
     device_config = get_config_by_id( get_cluster_config_obj(), device_id )
     address = device_config['ip']
-    return xmlrpclib.ServerProxy( 'http://' + address + '/RPC2' )
+    return xmlrpclib.ServerProxy( 'http://' + address )
 
 
 def get_UI_config_obj():

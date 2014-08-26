@@ -5,11 +5,6 @@ from SimpleXMLRPCServer import SimpleXMLRPCRequestHandler
 import serial
 
 
-# Restrict to a particular path.
-class RequestHandler(SimpleXMLRPCRequestHandler):
-    rpc_paths = ('/RPC2',)
-
-
 if __name__ == "__main__":
 
     import os
@@ -30,7 +25,7 @@ if __name__ == "__main__":
     Microscope = m.Microscope
 
     # Create server
-    server = SimpleXMLRPCServer(("localhost", int(port)), requestHandler=RequestHandler)
+    server = SimpleXMLRPCServer( ("localhost", int(port)) )
     server.register_introspection_functions()
 
     # Register an instance; all the methods of the instance are
