@@ -35,7 +35,7 @@ def get_config_by_fn(fn):
     return get_config(fn)
 
 
-def xmlrpc_call( elem_args, extra_args=[] ):
+def xmlrpc_call( elem_args, extra_args=[], fast_update=False ):
     xmlrpc_server = get_xmlrpc_server()
 
     if 'args' in elem_args.keys():
@@ -51,7 +51,7 @@ def xmlrpc_call( elem_args, extra_args=[] ):
 
     func = elem_args['func']
 
-    #@cache.memoize(1)
+    @cache.memoize(1, unless = (lambda: fast_update) )
     def cachable( func, args ):
         """This function construct allow caching by matching func, args"""
         f = getattr(xmlrpc_server, func)
@@ -74,12 +74,14 @@ def button_click():
     device_id  = request.args.get( "device_id" )
     extra_args = request.args.get( "extra_args", [] )
     elem_args  = get_config_by_id( get_UI_config_obj(), button_id )
-    retval     = xmlrpc_call( elem_args, extra_args )
     if   request.path == '/button_click':
+        retval = xmlrpc_call( elem_args, extra_args )
         return jsonify( state = retval )
     elif request.path == '/get_image':
+        retval = xmlrpc_call( elem_args, extra_args, fast_update = True )
         return Response( retval.data, mimetype='image/jpeg' )
     elif request.path == '/get_point':
+        retval = xmlrpc_call( elem_args, extra_args )
         return jsonify(
             time = calendar.timegm(time.localtime()),
             data = retval )
