@@ -25,12 +25,10 @@ def get_UI_config_obj():
 
 
 def get_cluster_config_obj():
-    if not hasattr(g, 'cluster_config'):
-        g.cluster_config = get_config(app.config['cluster_config_fn'])
-    return g.cluster_config
+    return get_config_by_fn(app.config['cluster_config_fn'])
 
 
-@cache.memoize(1)
+@cache.memoize(60, unless=(lambda: app.debug))
 def get_config_by_fn(fn):
     return get_config(fn)
 
