@@ -1,10 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from flask import Flask, render_template, request, jsonify, g, Response, abort
-import calendar, time, random, xmlrpclib
+from flask import Flask, render_template, request, jsonify, Response, abort
+import calendar, time, xmlrpclib
 from OLT_config_parser import get_config, get_config_by_id
 from flask.ext.cache import Cache
-from os import path
 
 app = Flask(__name__)
 cache = Cache(app,config={'CACHE_TYPE': 'memcached'})
@@ -33,7 +32,7 @@ def get_config_by_fn(fn):
     return get_config(fn)
 
 
-def xmlrpc_call( elem_args, extra_args=[], fast_update=False ):
+def xmlrpc_call( elem_args, extra_args, fast_update=False ):
     xmlrpc_server = get_xmlrpc_server()
 
     if 'args' in elem_args.keys():
@@ -69,7 +68,6 @@ def xmlrpc_call( elem_args, extra_args=[], fast_update=False ):
 @app.route( '/button_click' )
 def button_click():
     button_id  = request.args.get("id")
-    device_id  = request.args.get( "device_id" )
     extra_args = request.args.get( "extra_args", [] )
     elem_args  = get_config_by_id( get_UI_config_obj(), button_id )
 

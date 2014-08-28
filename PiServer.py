@@ -1,22 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from SimpleXMLRPCServer import SimpleXMLRPCServer
-from SimpleXMLRPCServer import SimpleXMLRPCRequestHandler
-import serial
-
 
 if __name__ == "__main__":
-
+    from SimpleXMLRPCServer import SimpleXMLRPCServer
     import os
     import sys
     if len(sys.argv) == 4:
         microscope_def_fn = sys.argv[1]
         port = sys.argv[2]
-        serial_port = sys.argv[3]
     else:
         microscope_def_fn = 'defaultUI/Microscope_dummy.py'
         port = 8000
-        serial_port = '/dev/ttyACM0'
 
     microscope_def_fn = os.path.abspath(microscope_def_fn)
     sys.path.append(os.path.dirname(microscope_def_fn))
@@ -30,7 +24,7 @@ if __name__ == "__main__":
 
     # Register an instance; all the methods of the instance are
     # published as XML-RPC methods
-    server.register_instance( Microscope(serial_port) )
+    server.register_instance( Microscope() )
 
     # Run the server's main loop
     server.serve_forever()
