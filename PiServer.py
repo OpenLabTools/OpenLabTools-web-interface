@@ -5,12 +5,17 @@ if __name__ == "__main__":
     from SimpleXMLRPCServer import SimpleXMLRPCServer
     import os
     import sys
-    if len(sys.argv) == 4:
+    if len(sys.argv) == 3:
         microscope_def_fn = sys.argv[1]
         port = sys.argv[2]
-    else:
+    elif len(sys.argv) == 2 and sys.argv[1] == "test":
         microscope_def_fn = 'defaultUI/Microscope_dummy.py'
         port = 8000
+    else:
+        print "Usage:"
+        print "    python PiServer.py [Microscope file path] [XML-RPC server port no.]"
+        print "    python PiServer.py test"
+        sys.exit(0)
 
     microscope_def_fn = os.path.abspath(microscope_def_fn)
     sys.path.append(os.path.dirname(microscope_def_fn))
