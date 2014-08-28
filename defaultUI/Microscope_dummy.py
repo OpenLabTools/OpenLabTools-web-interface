@@ -2,10 +2,6 @@
 # -*- coding: utf-8 -*-
 from random import random
 import urllib
-try:
-    from cStringIO import StringIO
-except:
-    from StringIO import StringIO
 import xmlrpclib
 
 class Microscope():
