@@ -118,4 +118,4 @@ if __name__ == "__main__":
     else: cluster_config_fn = './OLT_cluster_config.ini'
     app.config.update( dict( cluster_config_fn=cluster_config_fn ))
     app.debug = True
-    app.run(host='0.0.0.0')
+    app.run(host='0.0.0.0', port=80)
