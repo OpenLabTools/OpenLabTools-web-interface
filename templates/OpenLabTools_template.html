@@ -31,34 +31,34 @@
             </p>
         </footer>
         <nav class="navbar navbar-default navbar-fixed-bottom" role="navigation">
-            <div class="container">
-                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                    <ul class="nav navbar-nav">
-                        <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Choose Device <span class="caret"></span></a>
-                            <ul class="dropdown-menu" role="menu">
-                                {% for group_name, group_config in cluster_config.iteritems() %}
-                                    <li class='dropdown-header'>{{group_name}}</li>
-                                    <li><a href="/html_gen?id={{group_config['id']}}" target="_self">All devices in {{group_name}}</a></li>
+            <div class="container-fluid">
+                <ul class="nav navbar-nav">
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Choose Device <span class="caret"></span></a>
+                        <ul class="dropdown-menu" role="menu">
+                            {% for group_name, group_config in cluster_config.iteritems() %}
+                                <li class='dropdown-header'>{{group_name}}</li>
+                                <li><a href="/html_gen?id={{group_config['id']}}" target="_self">All devices in {{group_name}}</a></li>
 
-                                    {% for device_name, device_config in group_config.iteritems() if device_name not in ['id', 'config_file'] %}
-                                        <li><a href="/html_gen?device_id={{device_config['id']}}" target="_self">{{device_name}}</a></li>
-                                    {% endfor %}
+                                {% for device_name, device_config in group_config.iteritems() if device_name not in ['id', 'config_file'] %}
+                                    <li><a href="/html_gen?device_id={{device_config['id']}}" target="_self">{{device_name}}</a></li>
                                 {% endfor %}
-                            </ul>
-                        </li>
-                    </ul>
-                    <p class='navbar-text navbar-right'>
-                        {% if current_device_name is defined %}
-                            Current Device: <b>{{current_device_name}}</b>
-                        {% else %}
-                            Please pick a device.
-                        {% endif %}
-                        {% if device_id is defined %}
-                            Device ID: <b>{{device_id}}</b>
-                        {% endif %}
-                    </p>
-                </div>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                    <li>
+                        <p class='navbar-text navbar-right'>
+                            {% if current_device_name is defined %}
+                                Current Device: <b>{{current_device_name}}</b>
+                            {% else %}
+                                Please pick a device.
+                            {% endif %}
+                            {% if device_id is defined %}
+                                Device ID: <b>{{device_id}}</b>
+                            {% endif %}
+                        </p>
+                    </li>
+                </ul>
             </div>
         </nav>
     </body>
