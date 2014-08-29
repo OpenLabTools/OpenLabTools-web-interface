@@ -24,7 +24,7 @@ if __name__ == "__main__":
     Microscope = m.Microscope
 
     # Create server
-    server = SimpleXMLRPCServer( ("localhost", int(port)) )
+    server = SimpleXMLRPCServer( ("0.0.0.0", int(port)) )
     server.register_introspection_functions()
 
     # Register an instance; all the methods of the instance are
