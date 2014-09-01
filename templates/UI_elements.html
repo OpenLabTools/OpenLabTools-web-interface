@@ -1,5 +1,5 @@
 {% macro button(name, id, status_indicator, config_dict) -%}
-    <div class={% if status_indicator %}"col-xs-6"{% else %}"col-xs-2"{% endif %}>
+    <div class={% if status_indicator %}"col-xs-12 col-sm-6"{% else %}"col-xs-6 col-sm-2"{% endif %}>
         <div class="button-container">
             <button type="button"
                     id="{{ id }}"
@@ -102,7 +102,7 @@
 
 {% macro input(name, config_dict) %}
     {% set id = config_dict['id'] %}
-    <div class="col-xs-6">
+    <div class="col-xs-12 col-sm-6">
         <div class="input-group">
             <input type="text" class="form-control" id="input-{{ id }}">
             <span class="input-group-btn">
@@ -130,7 +130,7 @@
 
 
 {% macro text(name, id, refresh_interval) %}
-    <div class="col-xs-6">
+    <div class="col-xs-12 col-sm-6">
         <div class="jumbotron">
             <h1 id="{{id}}"></h1>
             <p>{{name}}</p>
@@ -152,7 +152,7 @@
 
 
 {% macro slider(name, config_dict) %}
-    <div class="col-xs-6">
+    <div class="col-xs-12 col-sm-6">
         {{name}}  <input id="output-{{config_dict.id}}" class="slider-input"></input>
         <br></br>
         <div class="slider" id = "{{config_dict.id}}"></div>
@@ -206,7 +206,7 @@
 
 
 {% macro toggle(name, config_dict) %}
-    <div class="col-xs-2">
+    <div class="col-xs-6 col-sm-2">
         <h5 class="toggle-text">{{name}}</h5>
         <div class="slider toggle" id = "{{config_dict.id}}" ></div>
     </div>
@@ -237,7 +237,7 @@
 {% macro dial(name, config_dict) %}
     {% set id = config_dict['id'] %}
     {% set ref_int = config_dict['refresh interval'] %}
-    <div class="col-xs-6">
+    <div class="col-xs-12 col-sm-6">
         <h3 class="dial-title">{{name}}</h3>
         <div class="centering-container">
             <input type="text" class="dial" id="{{id}}">
@@ -263,7 +263,7 @@
 
 {% macro image(name, config_dict) %}
     {% set id = config_dict['id'] %}
-    <div class="col-xs-6">
+    <div class="col-xs-12 col-sm-6">
         <img src='/get_image?id={{id}}' id='{{id}}' alt='whaat'>
     </div>
     <script type="text/javascript">
