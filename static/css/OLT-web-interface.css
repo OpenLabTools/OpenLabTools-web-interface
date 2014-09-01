@@ -83,3 +83,7 @@ div.centering-container {
 }
 
 body { padding-bottom: 70px; }
+
+img {
+     max-width: 100%;
+}
