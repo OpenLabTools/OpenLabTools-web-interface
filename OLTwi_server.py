@@ -106,7 +106,8 @@ def debug(x):
     return ""
 
 
-@app.route('/html_gen', methods=['GET'])
+@app.route('/')
+@app.route('/html_gen')
 def html_gen():
     if 'device_id' in request.args.keys():
         device_id = request.args['device_id']
