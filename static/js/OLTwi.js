@@ -68,3 +68,26 @@ function toFixed(value, precision) {
 
     return precision ? integral + '.' +  padding + fraction : integral;
 }
+
+// take a date object and return a string in the format DDMMYYhhmmss
+function formatDate(d) {
+    var DD = d.getDate()
+    if ( DD < 10 ) DD = '0' + DD
+
+    var MM = d.getMonth()+1
+    if ( MM < 10 ) MM = '0' + MM
+
+    var YY = d.getFullYear() % 100
+    if ( YY < 10 ) YY = '0' + YY
+
+    var hh = d.getHours() % 100
+    if ( hh < 10 ) hh = '0' + hh
+
+    var mm = d.getMinutes() % 100
+    if ( mm < 10 ) mm = '0' + mm
+
+    var ss = d.getSeconds() % 100
+    if ( ss < 10 ) ss = '0' + ss
+
+    return DD+MM+YY+hh+mm+ss
+}

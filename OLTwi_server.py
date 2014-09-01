@@ -77,6 +77,9 @@ def button_click():
 
     elif request.path == '/get_image':
         retval = xmlrpc_call( elem_args, extra_args, fast_update = True )
+        cache_key = 'last_image' + button_id
+        print cache_key
+        cache.set(cache_key, retval)
         return Response( retval.data, mimetype='image/jpeg' )
 
     elif request.path == '/get_point':
@@ -86,6 +89,14 @@ def button_click():
             data = retval )
 
     else: abort(404)
+
+@app.route( '/save_image' )
+def save_image():
+    elem_id  = request.args.get("id")
+    cache_key = 'last_image' + elem_id
+    print cache_key
+    img_data = cache.get('last_image' + elem_id).data
+    return Response(img_data, mimetype='image/jpeg')
 
 
 @app.template_filter('debug')

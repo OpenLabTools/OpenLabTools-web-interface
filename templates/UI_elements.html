@@ -256,8 +256,8 @@
                     { id: "{{id}}" },
                     function(data) {
                         $("#{{id}}").val(data.data)
-                    } )
-            }, {{ref_int}}*1000 )});
+                    }
+)            }, {{ref_int}}*1000 )});
     </script>
 {% endmacro %}
 
@@ -265,14 +265,19 @@
     {% set id = config_dict['id'] %}
     <div class="col-xs-12 col-sm-6">
         <img src='/get_image?id={{id}}' id='{{id}}' alt='whaat'>
+        <a href='/save_image?id={{id}}' id='snapshot-{{id}}'>Download Snapshot</a>
     </div>
     <script type="text/javascript">
         var img = $('#{{id}}');
+        var dlbth = $("#snapshot-{{id}}");
         img.on({
             load: function () {
                 console.log('loaded')
                 setTimeout( function () {
-                    img.attr( "src", "/get_image?id={{id}}&device_id={{device_id}}&time=" + new Date().getTime() );
+                    var d = new Date();
+                    img_url = "/get_image?id={{id}}&device_id={{device_id}}&time=" + d.getTime();
+                    img.attr( "src", img_url );
+                    dlbth.attr('download', 'image-'+formatDate(d));
                 }, 80 )
             },
             error: function () {
