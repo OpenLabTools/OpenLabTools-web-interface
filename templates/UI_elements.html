@@ -21,7 +21,7 @@
 {%- endmacro %}
 
 
-{% macro time_serise_plot(name, id, refresh_interval) -%}
+{% macro time_series_plot(name, id, refresh_interval) -%}
     <div class="col-xs-12">
         <div class="panel panel-primary",>
             <div class="panel-heading">
@@ -71,8 +71,8 @@
                 {% elif item['type'] == 'button_with_text' %}
                     {{ button( key, item['id'],  true, item ) }}
 
-                {% elif item['type'] == 'time_serise_plot' %}
-                    {{ time_serise_plot( key, item['id'], item['refresh interval']) }}
+                {% elif item['type'] == 'time_series_plot' %}
+                    {{ time_series_plot( key, item['id'], item['refresh interval']) }}
 
                 {% elif item['type'] == 'text' %}
                     {{ text( key, item['id'], item['refresh interval']) }}
