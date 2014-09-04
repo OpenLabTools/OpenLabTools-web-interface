@@ -394,7 +394,6 @@ TODO:
     - eg. press button to disable slider. Or update slider value when button is pressed.
 7. Add data browser widget.
 8. File transfer widget.
-9. Binary indicator widget.
 10. Use LESS css compiler to change the theme color of bootstrap and other elements to a more cambridge-green.
-11. The config files are constantly being written to, investigate.
+11. Disable debugging (app.debug) when development reached stable. This will enable caching.
 
