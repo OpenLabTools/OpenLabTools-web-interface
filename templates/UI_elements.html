@@ -92,6 +92,9 @@
                 {% elif item['type'] == 'image' %}
                     {{ image( key, item ) }}
 
+                {% elif item['type'] == 'binary_indicator' %}
+                    {{ binary_indicator( key, item ) }}
+
                 {% endif %}
             {%- endfor %}
             </row>
@@ -287,5 +290,35 @@
                 }, 100 )
             }
         })
+    </script>
+{% endmacro %}
+
+{% macro binary_indicator(name, config_dict) %}
+    {% set id = config_dict['id'] %}
+    {% set refresh_interval = config_dict['refresh interval'] %}
+    <div class="col-xs-6 col-sm-4">
+        <div class="jumbotron" style='text-align: center'>
+            <h1><span class="glyphicon glyphicon-ok" id="{{id}}"></span></h1>
+            <p>{{name}}</p>
+        </div>
+    <div>
+    <script type="text/javascript">
+    $( function () {
+        function get_state() {
+            $.ajax({
+                url: '/button_click',
+                data: {id: "{{id}}"},
+            })
+            .done(function(data) {
+                console.log(data.state)
+                $("#{{id}}").toggleClass('glyphicon-ok', data.state);
+                $("#{{id}}").toggleClass('glyphicon-remove', !data.state);
+            })
+            .always( function() {
+                setTimeout(get_state, {{refresh_interval}}*1000)
+            })
+        };
+        get_state();
+    })
     </script>
 {% endmacro %}

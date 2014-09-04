@@ -36,6 +36,10 @@ class Microscope():
         #img = Image.open(file)
         return xmlrpclib.Binary(urllib.urlopen(url).read())
 
+    def overheating(self):
+        if self.temp > 30: return True
+        else: return False
+
 
 if __name__ == "__main__":
     r = Microscope()
