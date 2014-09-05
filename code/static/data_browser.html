@@ -1,0 +1,244 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <script language="javascript" type="text/javascript" src="flot/jquery.js"></script>
+    <script language="javascript" type="text/javascript" src="flot/jquery.flot.js"></script>
+    <script language="javascript" type="text/javascript" src="flot/jquery.flot.selection.js"></script>
+    <script language="javascript" type="text/javascript" src="flot/jquery.flot.resize.js"></script>
+    <script language="javascript" type="text/javascript" src="./noUiSlider/jquery.nouislider.full.min.js"></script>
+    <script type="text/javascript">
+
+    $(function() {
+        var data =  [];
+        var plot = null;
+
+        turnOffPlot = function (seriesIdx) {
+            var someData = plot.getData();
+            someData[seriesIdx].lines.show = !someData[seriesIdx].lines.show;
+            someData[seriesIdx].points.show = !someData[seriesIdx].points.show;
+            plot.setData(someData);
+            plot.draw();
+        }
+
+        function addIdx(data) {
+            for (var i=0; i<data.length; i++) {
+                data[i].Idx = i;
+            }
+        }
+
+        function fetch_data() {
+            function data_gen() {
+                var d = [];
+                for (var i = 0; i <= 100; ++i) {
+                    d.push([i, Math.random()]);
+                }
+                return d
+            }
+
+            for (var i = 0; i<3; i++) {
+                data.push( { label: "Series" + i, data: data_gen() } );
+            }
+
+            addIdx(data)
+            console.log(data)
+            return data
+
+        }
+        // setup plot
+        function getData(x1, x2) {
+            if (data.length === 0) {
+                data = fetch_data()
+            };
+            return data
+        }
+
+        var options = {
+            legend: {
+                show: false
+            },
+            series: {
+                lines: {
+                    show: true
+                },
+                points: {
+                    show: true
+                }
+            },
+            yaxis: {
+                ticks: 10,
+                labelWidth: 50,
+                reserveSpace:true
+            },
+            legend: {
+                show: true,
+                labelFormatter: function(label, series) {
+                    return label+'<input type="checkbox" checked onchange="turnOffPlot(' + series.Idx + ')">';
+                }
+            }
+        };
+
+        var startData = getData();
+
+        var plot = $.plot("#placeholder", startData, options);
+        // Create the overview plot
+        var overview = $.plot("#overview", startData, {
+            legend: {
+                show: false
+            },
+            series: {
+                lines: {
+                    show: true,
+                    lineWidth: 1
+                },
+                shadowSize: 0
+            },
+            yaxis: {
+                labelWidth: 50,
+                reserveSpace:true,
+                ticks: 3,
+            },
+            grid: {
+                color: "#999"
+            },
+            selection: {
+                mode: "x",
+            }
+        });
+
+        $("#overview").bind("plotselected", function (event, ranges) {
+            // do the zooming
+            // don't fire event on the overview to prevent eternal loop
+            var xranges = [ranges.xaxis.from, ranges.xaxis.to];
+            plot.getOptions().xaxes[0].min = xranges[0];
+            plot.getOptions().xaxes[0].max = xranges[1];
+            plot.setupGrid();
+            plot.draw();
+            overview.setSelection(ranges, true);
+            //plot.setSelection(ranges);
+            slider.val(xranges);
+        });
+
+        var axes = overview.getAxes();
+        var xmin = axes.xaxis.min;
+        var xmax = axes.xaxis.max;
+        var xrang = xmax - xmin;
+
+        var slider = $('#slider');
+
+        slider.noUiSlider({
+            start: [0.75*xrang+xmin,xmax],
+            range: {
+                'min': xmin,
+                'max': xmax
+            },
+            connect: true,
+            behaviour: 'tap-drag'
+        });
+
+        slider.on( "change", function() {
+            value = slider.val();
+            var rang = {
+                    xaxis: {
+                        from: value[0],
+                        to: value[1]
+                    }
+                }
+            console.log(rang);
+            overview.setSelection(rang);
+        })
+
+        slider.on( "slide", function() {
+            value = slider.val();
+            var rang = {
+                    xaxis: {
+                        from: value[0],
+                        to: value[1]
+                    }
+                }
+            overview.setSelection(rang, true);
+        })
+
+        slider.noUiSlider_pips({
+            mode: 'positions',
+            values: [0,25,50,75,100],
+            density: 4
+        });
+
+
+        // Tags after '-inline-' are inserted as HTML.
+        // noUiSlider writes to the first element it finds.
+        slider.Link('upper').to('-inline-<div class="tooltip"></div>', function ( value ) {
+            // The tooltip HTML is 'this', so additional
+            // markup can be inserted here.
+            $(this).html( '<strong>' + value + '</strong>' );
+        });
+
+        slider.Link('lower').to('-inline-<div class="tooltip"></div>', function ( value ) {
+            $(this).html( '<strong>' + value + '</strong>' );
+        });
+
+        slider.val(slider.val());
+        value = slider.val();
+        var rang = {
+                xaxis: {
+                    from: value[0],
+                    to: value[1]
+                }
+            }
+        console.log(rang);
+        overview.setSelection(rang);
+    });
+
+
+
+    </script>
+    <link href="noUiSlider/jquery.nouislider.css" rel="stylesheet">
+    <link href="noUiSlider/jquery.nouislider.pips.css" rel="stylesheet">
+    <style type="text/css">
+        .tooltip {
+            display: block;
+            position: absolute;
+            border: 1px solid #D9D9D9;
+            font: 400 12px/12px Arial;
+            border-radius: 3px;
+            background: #fff;
+            top: 35px;
+            padding: 5px;
+            left: -18px;
+            text-align: center;
+            width: 50px;
+        }
+        .tooltip strong {
+            display: block;
+            padding: 2px;
+        }
+        .noUi-horizontal .noUi-handle {
+            width: 14px;
+            left: -7px
+        }
+        .noUi-handle:before,
+        .noUi-handle:after {
+            left: 6px;
+        }
+        .noUi-target {
+            margin-left: 53px;
+            margin-right: 7px
+        }
+    </style>
+</head>
+<body>
+    <div class='container' id='main-container'>
+        <form>
+            <fieldset>
+                <label>Function</label><input type="text" placeholder="Function Name">
+                <label>Arguments</label><input type="text" placeholder="Comma separated string args">
+                <button type="submit" class="btn">Get Data</button>
+            <fieldset>
+        </form>
+        <div id="placeholder" style="width:100%; height: 300px;"></div>
+        <div id="overview" style="width:100%; height:125px;"></div>
+        <div class="slider" id = "slider"></div>
+    </div>
+</body>
+</html>
