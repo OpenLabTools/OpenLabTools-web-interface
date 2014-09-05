@@ -9,7 +9,7 @@ if __name__ == "__main__":
         device_def_fn = sys.argv[1]
         port = sys.argv[2]
     elif len(sys.argv) == 2 and sys.argv[1] == "test":
-        device_def_fn = 'defaultUI/Microscope_dummy.py'
+        device_def_fn = 'examples/WidgetOverview/Microscope_dummy.py'
         port = 8000
     else:
         print "Usage:"
