@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import serial
-class Microscope():
+class Device():
     def __init__(self, serial_port = "/dev/ttyACM0"):
         self.temp = 1
         self.set_temp = self.temp
@@ -38,7 +38,7 @@ class Microscope():
 
 
 if __name__ == "__main__":
-    r = Microscope()
+    r = Device()
     import time
     time.sleep(1)
     print r.get_temp()

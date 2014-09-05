@@ -11,7 +11,7 @@ from picamera import PiCamera
 from time import time as tic
 import threading
 
-class Microscope():
+class Device():
     def __init__(self, serial = '/dev/ttyARM0'):
         self.camera = PiCamera()
         self.camera.resolution = (320, 200)
@@ -47,6 +47,6 @@ class Microscope():
 
 if __name__ == "__main__":
     from time import sleep
-    r = Microscope()
+    r = Device()
     sleep(1)
     print r.get_image()

@@ -10,7 +10,7 @@ import xmlrpclib
 from picamera import PiCamera
 from time import time as tic
 
-class Microscope():
+class Device():
     def __init__(self, serial = '/dev/ttyARM0'):
         self.temp = 1
         self.set_temp = self.temp
@@ -34,4 +34,4 @@ class Microscope():
 
 
 if __name__ == "__main__":
-    r = Microscope()
+    r = Device()

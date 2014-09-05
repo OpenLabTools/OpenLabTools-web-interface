@@ -1,0 +1,187 @@
+diff --git a/code/OLTwi_server.py b/code/OLTwi_server.py
+index bb3e7d2..403ed8e 100755
+--- a/code/OLTwi_server.py
++++ b/code/OLTwi_server.py
+@@ -1,6 +1,6 @@
+ #!/usr/bin/env python
+ # -*- coding: utf-8 -*-
+-from flask import Flask, render_template, request, jsonify, Response, abort
++from flask import Flask, render_template, request, jsonify, Response, abort, make_response
+ import calendar, time, xmlrpclib
+ from OLT_config_parser import get_config, get_config_by_id
+ from flask.ext.cache import Cache
+@@ -66,6 +66,7 @@ def xmlrpc_call( elem_args, extra_args, fast_update=False ):
+ @app.route( '/get_point'    )
+ @app.route( '/get_image'    )
+ @app.route( '/button_click' )
++@app.route( '/get_file'     )
+ def button_click():
+     button_id  = request.args.get("id")
+     extra_args = request.args.get( "extra_args", [] )
+@@ -88,6 +89,18 @@ def button_click():
+             time = calendar.timegm(time.localtime()),
+             data = retval )
+ 
++    elif request.path == '/get_file':
++        retval = xmlrpc_call( elem_args, extra_args )
++
++        file_basename = str(extra_args)
++        r = make_response(retval.data)
++        r.headers['Content-Description'] = 'File Transfer'
++        r.headers['Cache-Control'] = 'no-cache'
++        r.headers['Content-Type'] = 'text/csv'
++        r.headers['Content-Disposition'] = 'attachment; filename=%s' % file_basename
++        r.headers['Content-Length'] = len(retval.data)
++        return r
++
+     else: abort(404)
+ 
+ @app.route( '/save_image' )
+diff --git a/code/defaultUI/Microscope_dummy.py b/code/defaultUI/Microscope_dummy.py
+index c9b19ea..16ed982 100644
+--- a/code/defaultUI/Microscope_dummy.py
++++ b/code/defaultUI/Microscope_dummy.py
+@@ -40,6 +40,16 @@ class Microscope():
+         if self.temp > 30: return True
+         else: return False
+ 
++    def get_file(self, fn):
++        # get file according to parameters given and return it as xmlrpc binary
++        csv = '''
++header1, header2, header3
++1,2,3,
++4,5,6,
++7,8,9
++'''
++        return xmlrpclib.Binary(csv)
++
+ 
+ if __name__ == "__main__":
+     r = Microscope()
+diff --git a/code/defaultUI/UI_config.ini b/code/defaultUI/UI_config.ini
+index 9607bad..3c839d9 100644
+--- a/code/defaultUI/UI_config.ini
++++ b/code/defaultUI/UI_config.ini
+@@ -40,6 +40,10 @@
+         step = 0.1
+         init_val = 25
+         id = 0c9c3aac
++    [[get data file]]
++        type = file_download
++        func = get_file
++        id = f7cb0685
+ 
+ 
+ [Monitor]
+diff --git a/code/static/js/OLTwi.js b/code/static/js/OLTwi.js
+index 0eb194a..caf4cd2 100644
+--- a/code/static/js/OLTwi.js
++++ b/code/static/js/OLTwi.js
+@@ -37,12 +37,17 @@ function plot_time_series(name, id, refresh_interval) {
+     start_updating();
+ }
+ 
+-function button_ajax(id, status_indicator, extra_args) {
++function button_ajax(id, status_indicator, extra_args, get_file) {
+     var btn = $('#'+id);
+     btn.button('loading');
+     data = { id: id };
+     if (extra_args != undefined) { data.extra_args = extra_args };
+-    $.getJSON( "../button_click", data )
++
++    var url = "../button_click";
++    console.log(typeof get_file)
++    if (typeof get_file !== 'undefined') url = '../get_file';
++
++    $.getJSON( url, data )
+     .done( function (json) {
+         if (status_indicator) {
+             $("#"+ id + "-Status").text("Status: " + json.state);
+diff --git a/code/templates/UI_elements.html b/code/templates/UI_elements.html
+index f9a70a5..cc15d5d 100644
+--- a/code/templates/UI_elements.html
++++ b/code/templates/UI_elements.html
+@@ -95,6 +95,9 @@
+                 {% elif item['type'] == 'binary_indicator' %}
+                     {{ text( key, item['id'], item['refresh interval']) }}
+ 
++                {% elif item['type'] == 'file_download' %}
++                    {{ file_download( key, item ) }}
++
+                 {% endif %}
+             {%- endfor %}
+             </row>
+@@ -119,12 +122,15 @@
+         $( function() {
+             $('#{{ id }}').click( function(){
+                 var input_val = $('#input-{{ id }}').val();
+-                button_ajax("{{ id }}", false, input_val);
++                {% if config_dict['type'] == 'file_download' %}
++                    button_ajax("{{ id }}", false, input_val, 'file_download');
++                {% else %}
++                    button_ajax("{{ id }}", false, input_val);
++                {% endif %}
+             });
+             $('#input-{{ id }}').keydown( function(event) {
+-                if (event.keyCode == 13) {
+-                    var input_val = $('#input-{{ id }}').val();
+-                    button_ajax("{{ id }}", false, input_val);
++                if (event.keyCode === 13) {
++                    ('#{{ id }}').click();
+                 }
+             });
+         });
+@@ -304,4 +310,21 @@
+             }
+         })
+     </script>
++{% endmacro %}
++
++
++{% macro file_download(name, config_dict) %}
++    {% set id = config_dict['id'] %}
++    <div class="col-xs-12 col-sm-6">
++        <div class="input-group">
++            <form method="get" action="/get_file">
++                <input type="text" class="form-control" id="input-{{ id }}">
++                <span class="input-group-btn">
++                    <button type="submit" id="{{ id }}" data-loading-text="Working..."
++                            title="{{config_dict['func']}}(&quot;{{config_dict['args']}}&quot;)"
++                            class="btn btn-primary">{{name}}</button>
++                </span>
++            </form>
++        </div>
++    </div>
+ {% endmacro %}
+\ No newline at end of file
+diff --git a/content.md b/content.md
+index 64766ef..8135adb 100755
+--- a/content.md
++++ b/content.md
+@@ -374,13 +374,13 @@ Here is more about [double buffered graphics](http://docs.oracle.com/javase/tuto
+ 
+ Learning resources:
+ 
+-Flask basics: http://flask.pocoo.org/docs/0.10/
+-Jinja basics: http://jinja.pocoo.org/docs/dev/
+-bootstrap framework: http://getbootstrap.com/components/
+-flot js charting library: http://www.flotcharts.org/flot/examples/
+-jQuery knob: https://github.com/aterrien/jQuery-Knob
+-NoUI slider: http://refreshless.com/nouislider/
+-
++1. Flask basics: http://flask.pocoo.org/docs/0.10/
++1. Jinja basics: http://jinja.pocoo.org/docs/dev/
++1. bootstrap framework: http://getbootstrap.com/components/
++1. flot js charting library: http://www.flotcharts.org/flot/examples/
++1. jQuery knob: https://github.com/aterrien/jQuery-Knob
++1. NoUI slider: http://refreshless.com/nouislider
++/
+ TODO:
+ 
+ 1. Add group control interface to control multiple pi on the same page
+@@ -396,4 +396,5 @@ TODO:
+ 8. File transfer widget.
+ 10. Use LESS css compiler to change the theme color of bootstrap and other elements to a more cambridge-green.
+ 11. Disable debugging (app.debug) when development reached stable. This will enable caching.
++12. Investigate the merit of using python iterators to stream images. May speed up things. [http://flask.pocoo.org/docs/0.10/patterns/streaming/]
+ 

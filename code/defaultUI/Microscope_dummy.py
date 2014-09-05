@@ -4,7 +4,7 @@ from random import random
 import urllib
 import xmlrpclib
 
-class Microscope():
+class Device():
     def __init__(self, serial = '/dev/ttyARM0'):
         del serial
         self.temp = 1
@@ -42,4 +42,4 @@ class Microscope():
 
 
 if __name__ == "__main__":
-    r = Microscope()
+    r = Device()
