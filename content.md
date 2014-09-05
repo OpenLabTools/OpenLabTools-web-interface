@@ -16,8 +16,6 @@ Screenshot:
 
 <img src="images/OpenLabTools Web Interface.png", width = 80%>
 
----
-
 ## The basics
 
 ### Software structure
@@ -96,6 +94,17 @@ Usage:
     sudo python OLTwi_server.py [cluster config filename]
 
 This will start a server on port 80 which then can be access via any web browser in the same network. Point your browser at the ip address of the server and a webpage will show up asking you to pick a device.
+
+#### Run examples
+
+If you want to see an example web interface, run the following command.
+
+    sudo python OLTwi_server.py
+
+    # open another terminal and run
+    python PiServer.py test
+
+Point your browser to "localhost" and select "Overview of all widgets" at the bottom of the page. The web interface is rendered according to the config file: `examples/OLT_cluster_config.ini` and the "Overview of all widgets" UI is defined by `examples/WidgetOverview/UI_config`. The "Device" class is defined in `examples/WidgetOverview/Microscope_dummy.py`.
 
 ---
 
