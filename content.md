@@ -16,17 +16,18 @@ Screenshot:
 
 <img src="images/OpenLabTools Web Interface.png", width = 80%>
 
+---
 
 ## The basics
 
 ### Software structure
 <img src="images/software_structure.png" width=600px>
 
-#### Microscope class
+#### Device class
 This is a user defined class to impliment methods to communicate with the hardware. Users will be able to call these functions in order to control and monitor the target hardware.
 
 #### XMLRPC server
-A simple XMLRPC server is implimented using python's xmlrpclib module. The server will expose methods from a user defined class named Microscope as functions. The application server can call these functions and get the returned data.
+A simple XMLRPC server is implimented using python's xmlrpclib module. The server will expose methods from a user defined class named Device as functions. The application server can call these functions and get the returned data.
 
 * [xmlrpclib python doc](https://docs.python.org/2/library/xmlrpclib.html)
 * [XML-RPC wikipedia](http://en.wikipedia.org/wiki/XML-RPC)
@@ -36,8 +37,10 @@ This server is implimented using python's flask library. It serves a dynamically
 
 * [Flask official webpage](http://flask.pocoo.org/)
 
-
 ### The basic setup
+* The software is written in python hence it can be run on any python enabled platform.
+* The xmlrpc server and application server can be run on the same device or different devices in the same network.
+
 Here we will describ a set up with a raspberry Pi commanding the OpenLabTools microscope through an Arduino and a desktop running the application server.
 
 #### Raspberry Pi
@@ -45,23 +48,23 @@ a xmlrpc server will run on the raspberry pi.
 
 Files needed:
 
-__PiServer.py__ : Download archive of OpenLabTool-web-interface git repository, extract and transfer this file onto the Pi: `wget https://raw.githubusercontent.com/LiyouZhou/OpenLabTools-web-interface/master/PiServer.py`
+__PiServer.py__ : Download archive of OpenLabTool-web-interface git repository, extract and transfer this file onto the Pi. Alternatively run this command on the Pi: `wget https://raw.githubusercontent.com/OpenLabTools/OpenLabTools-web-interface/master/code/PiServer.py`
 
-__Microscope Class Definition File__: This file will define a Class named __Microscpe__. Methods of this class are functions which can be mapped to the UI. For example Microscope.led_on() can be mapped to a UI button to turn on an LED.
+__Device Class Definition File__: This file is written by the user and will define a Class named __Device__. Methods of this class are functions which can be mapped to the UI. For example Device.led_on() can be mapped to a UI button to turn on an LED.
 
 Usage:
 
-    python PiServer.py [Microscope Class Definition File] [port no]
+    python PiServer.py [Device Class Definition File] [port no]
 
 #### Desktop PC
 The desktop PC will run the application server which will:
 
 * Serve the static webpages and related files.
-* Serve UI calls and relay the calls to the xmlrpc server.
+* Serve fucntion calls from the UI and relay the calls to the xmlrpc server.
 
-Prerequistes:
+__Prerequistes:__
 
-Flask, Flask-cache plugin, pylibmc and configobj
+Python modules: Flask, Flask-cache plugin, pylibmc and configobj
 
 The easiest way to install these is through python-setuptools and pip.
 To install these tools on ubuntu run the following commands:
@@ -82,11 +85,11 @@ To install these tools on ubuntu run the following commands:
     sudo apt-get install -y libmemcached-dev zlib1g-dev libssl-dev python-dev build-essential
     pip install pylibmc
 
-Files needed:
+__Program Files and Configuration:__
 
-* Clone the OpenLabTools-web-interface repository: `https://github.com/LiyouZhou/OpenLabTools-web-interface.git`
-* a UI configuration file: For each raspberry pi, Will define the UI elements and the xmlrpc functions that are mapped to these elements.
-* A cluster configuration file: Will define the UI config filename and xmlrpc server address for each raspberry pi connected to this application server.
+* Clone the OpenLabTools-web-interface repository: `https://github.com/OpenLabTools/OpenLabTools-web-interface.git`
+* A UI configuration file: For each raspberry pi, Will define the UI elements and the xmlrpc functions that are mapped to these elements. [#Guide to writing the user defined files]
+* A cluster configuration file: Will define the UI config filename and xmlrpc server address for each raspberry pi connected to this application server.[#Guide to writing the user defined files]
 
 Usage:
 
@@ -94,13 +97,11 @@ Usage:
 
 This will start a server on port 80 which then can be access via any web browser in the same network. Point your browser at the ip address of the server and a webpage will show up asking you to pick a device.
 
-### Alternative setup
-* The software is written in python hence it can be run on any python enabled platform.
-* The xmlrpc server and application server can be run on the same device.
+---
 
-### Guide to writing the user defined files
+## Guide to writing the user defined files
 
-UI configuration file
+### UI configuration file
 
 This file defines the user interface for each raspberry pi connected to the application server. To dive in, here is an example of the file:
 
@@ -135,11 +136,9 @@ Within a Sections, you can put widgets. In the config file, they are defined in 
                                     first writing the config file. delete this
                                     line.
 
-further examples can be found here: [defaultUI](https://raw.githubusercontent.com/LiyouZhou/OpenLabTools-web-interface/master/defaultUI/UI_config.ini), [devangUI](https://raw.githubusercontent.com/LiyouZhou/OpenLabTools-web-interface/master/devangUI/UI_config.ini), [jiawangUI](https://raw.githubusercontent.com/LiyouZhou/OpenLabTools-web-interface/master/jiawangUI/UI_config.ini), [zaynUI](https://raw.githubusercontent.com/LiyouZhou/OpenLabTools-web-interface/master/zaynUI/UI_config.ini)
+further examples can be found in the __examples__ folder
 
 #### Available widget types
-
----
 
 ##### Button
 <img src="images/button.png">
@@ -180,7 +179,7 @@ A function is called at regular intervals. The returned floating point number is
 
 <img src="images/text.png">
 
-A function is called at regular intervals. The returned floating point number is displayed to 3 decimal places.
+A function is called at regular intervals. If returned value is a string, it will be displayed as is; if it is a floating point number, it will be formatted to 3 decimal places; if it is a boolean type, a tick to cross icon will be displayed.
 
     type = text
     func = function name to be called
@@ -254,13 +253,15 @@ Repeatedly request an image thus acheiving a video like monitor. The function sp
     func = function name to be called
     args = any extra arguments to be passed to the function (optional)
 
-#### The Microscope class definition
+---
 
-A python class named "Microscope" should be defined to abstract the communication between the XMLRPC server and the actual hardware. In the most common setup where the raspberry pi is controlling a arduino, this class should contain function to send commands down the serial port. To dive in, here is an example:
+### The Device class definition
+
+A python class named "Device" should be defined to abstract the communication between the XMLRPC server and the actual hardware. In the most common setup where the raspberry pi is controlling a arduino, this class should contain function to send commands down the serial port. To dive in, here is an example:
 
     import serial
 
-    class Microscope():
+    class Device():
         def __init__(self):
             serial_port = "/dev/ttyACM0")
             self.temp = 1
@@ -309,13 +310,13 @@ The UI will have 2 sections, and one widget in each section. A slider will call 
 
 ##### Implimenting Video monitor
 
-The Video monitor widget request images from the server as fast as possible to give a video like effect. The format of returned image from the Microscope class should be a "xmlrpc binary object". There is an example using the camera module of raspberry pi:
+The Video monitor widget request images from the server as fast as possible to give a video like effect. The format of returned image from the Device class should be a "xmlrpc binary object". There is an example using the camera module of raspberry pi:
 
     from cStringIO import StringIO
     from picamera import PiCamera
     import xmlrpclib
 
-    class Microscope():
+    class Device():
         def __init__(self):
             self.camera = PiCamera()
             self.camera.resolution = (320, 200)
@@ -335,7 +336,7 @@ A more efficient way is to have the camera continuously take pictures and store 
     import xmlrpclib
     import threading
 
-    class Microscope():
+    class Device():
         def __init__(self):
             self.camera = PiCamera()
             self.camera.resolution = (320, 200)
@@ -368,18 +369,16 @@ A separate thread will be running in the background keep updating the image. So 
 
 Here is more about [double buffered graphics](http://docs.oracle.com/javase/tutorial/extra/fullscreen/doublebuf.html).
 
-
-
-# Development Notes
+## Development Notes
 
 Learning resources:
 
-Flask basics: http://flask.pocoo.org/docs/0.10/
-Jinja basics: http://jinja.pocoo.org/docs/dev/
-bootstrap framework: http://getbootstrap.com/components/
-flot js charting library: http://www.flotcharts.org/flot/examples/
-jQuery knob: https://github.com/aterrien/jQuery-Knob
-NoUI slider: http://refreshless.com/nouislider/
+1. Flask basics: http://flask.pocoo.org/docs/0.10/
+1. Jinja basics: http://jinja.pocoo.org/docs/dev/
+1. bootstrap framework: http://getbootstrap.com/components/
+1. flot js charting library: http://www.flotcharts.org/flot/examples/
+1. jQuery knob: https://github.com/aterrien/jQuery-Knob
+1. NoUI slider: http://refreshless.com/nouislider/
 
 TODO:
 
@@ -393,6 +392,7 @@ TODO:
 6. Cross communication between widgets
     - eg. press button to disable slider. Or update slider value when button is pressed.
 7. Add data browser widget.
+    - already in development. See code/static/data_browser.html
 8. File transfer widget.
 10. Use LESS css compiler to change the theme color of bootstrap and other elements to a more cambridge-green.
 11. Disable debugging (app.debug) when development reached stable. This will enable caching.
