@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 from uuid import uuid4
 from collections import OrderedDict
+import re
 id_len = 8
 
 def get_config(config_fn):
@@ -15,46 +16,6 @@ def get_config_by_id(config_dict, elem_id):
             if subsec_name != 'id' and subsec['id'] == elem_id:
                 return subsec.update({'name': subsec_name})
     return None
-
-def parse_config_old(config_fn):
-    with open(config_fn, 'r') as fn:
-        root = OrderedDict()
-        crt_sec = None
-        crt_subsec = None
-        for line in fn:
-            line = line.strip()
-            # escape empty lines and
-            if line == '' or line.startswith('#'): continue
-            level = line.count('[')
-
-            if level == 1: # start of new section
-                if crt_sec != None:
-                    if 'id' not in crt_sec.keys():
-                        crt_sec['id'] = str(uuid4())[:id_len]
-                    root[crt_sec['id']] = crt_sec
-                crt_sec = OrderedDict() # temp dict
-                crt_node = crt_sec
-            elif level == 2: # start of new widget
-                if crt_subsec != None:
-                    if 'id' not in crt_subsec.keys():
-                        crt_subsec['id'] = str(uuid4())[:id_len]
-                    crt_sec[crt_subsec['id']] = crt_subsec
-                crt_subsec = OrderedDict()
-                crt_node = crt_subsec
-
-            if level != 0:
-                crt_node['name'] = line.strip(' []')
-            else:
-                key, value = [x.strip() for x in line.split('=')]
-                crt_node[key] = value
-        if 'id' not in crt_subsec.keys():
-            crt_subsec['id'] = str(uuid4())[:id_len]
-        crt_sec[crt_subsec['id']] = crt_subsec
-
-        if 'id' not in crt_sec.keys():
-            crt_sec['id'] = str(uuid4())[:id_len]
-        root[crt_sec['id']] = crt_sec
-    return root
 
 def print_config( config_dict ):
     s = ''
@@ -73,8 +34,6 @@ def write_config( config_fn, config_dict ):
     print config_dict
     with open( config_fn, 'w') as fn:
         fn.write( print_config(config_dict) )
-
-import re
 
 def parse_config( config_fn ):
 
@@ -116,8 +75,6 @@ def parse_config( config_fn ):
 
     return config_d
 
-
-
 if __name__ == '__main__':
     import tempfile
     import os
@@ -132,5 +89,3 @@ if __name__ == '__main__':
     assert(config1 == config2)
     fileTemp.close()
     os.remove(fileTemp.name)
-    # config = parse_config_v2(config_fn)
-    # print print_config(config)
