@@ -30,8 +30,6 @@ def print_config( config_dict ):
     return s
 
 def write_config( config_fn, config_dict ):
-    print config_fn
-    print config_dict
     with open( config_fn, 'w') as fn:
         fn.write( print_config(config_dict) )
 
