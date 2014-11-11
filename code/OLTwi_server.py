@@ -3,10 +3,10 @@
 from flask import Flask, render_template, request, jsonify, Response, abort
 import calendar, time, xmlrpclib
 from OLT_config_parser import get_config, get_config_by_id
-from flask.ext.cache import Cache
+#from flask.ext.cache import Cache
 
 app = Flask(__name__)
-cache = Cache(app,config={'CACHE_TYPE': 'memcached'})
+#cache = Cache(app,config={'CACHE_TYPE': 'memcached'})
 
 
 def get_xmlrpc_server():
@@ -27,7 +27,7 @@ def get_cluster_config_obj():
     return get_config_by_fn(app.config['cluster_config_fn'])
 
 
-@cache.memoize(60, unless=(lambda: app.debug))
+#@cache.memoize(60, unless=(lambda: app.debug))
 def get_config_by_fn(fn):
     return get_config(fn)
 
@@ -48,7 +48,7 @@ def xmlrpc_call( elem_args, extra_args, fast_update=False ):
 
     func = elem_args['func']
 
-    @cache.memoize(1, unless = (lambda: fast_update) )
+#    @cache.memoize(1, unless = (lambda: fast_update) )
     def cachable( func, args ):
         """This function construct allow caching by matching func, args"""
         f = getattr(xmlrpc_server, func)
@@ -130,4 +130,4 @@ if __name__ == "__main__":
     else: cluster_config_fn = './examples/OLT_cluster_config.ini'
     app.config.update( dict( cluster_config_fn=cluster_config_fn ))
     app.debug = True
-    app.run(host='0.0.0.0', port=80)
+    app.run(host='0.0.0.0', port=5000)
