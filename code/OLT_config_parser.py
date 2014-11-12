@@ -14,10 +14,12 @@ def get_config(config_fn):
 def get_config_by_id(config_dict, elem_id):
     for section_name, section in config_dict.iteritems():
         if elem_id == section['id']:
-            return section.update({'name': section_name})
+            section.update({'name': section_name})
+            return section
         for subsec_name, subsec in section.iteritems():
             if subsec_name != 'id' and subsec['id'] == elem_id:
-                return subsec.update({'name': subsec_name})
+                subsec.update({'name': subsec_name})
+                return subsec
     return None
 
 def add_id(config_dict):
@@ -94,7 +96,6 @@ if __name__ == '__main__':
     import os
 
     config_fn = 'E:\OpenLabTools-web-interface\code\examples\WidgetOverview\UI_config.ini'
-    #config_fn = 'examples\OLT_cluster_config.ini'
     config1 = get_config( config_fn )
     fileTemp = tempfile.NamedTemporaryFile(delete = False)
     write_config( fileTemp.name, config1 )
@@ -103,3 +104,7 @@ if __name__ == '__main__':
     assert(config1 == config2)
     fileTemp.close()
     os.remove(fileTemp.name)
+    config_fn = 'examples\OLT_cluster_config.ini'
+    config_dict = get_config(config_fn)
+    elem_id = 'de87a652'
+    get_config_by_id(config_dict, elem_id)
