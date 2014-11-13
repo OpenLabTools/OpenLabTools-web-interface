@@ -3,10 +3,10 @@
 from flask import Flask, render_template, request, jsonify, Response, abort
 import calendar, time, xmlrpclib
 from OLT_config_parser import get_config, get_config_by_id
-from flask.ext.cache import Cache
+from OLT_cache import Cache
 
 app = Flask(__name__)
-cache = Cache(app,config={'CACHE_TYPE': 'memcached'})
+cache = Cache(app)
 
 
 def get_xmlrpc_server():
