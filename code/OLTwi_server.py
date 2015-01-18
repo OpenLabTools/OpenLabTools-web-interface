@@ -1,23 +1,32 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from flask import Flask, render_template, request, jsonify, Response, abort
+#from flask import Flask, render_template, request, jsonify, Response, abort
 import calendar, time, xmlrpclib
 from OLT_config_parser import get_config, get_config_by_id
 from OLT_cache import Cache
 
-app = Flask(__name__)
+from bottle import route, run, response, abort, Bottle, get
+from bottle import request, static_file, Response
+import json
+from bottle import jinja2_template as template
+
+#app = Flask(__name__)
+app = Bottle()
 cache = Cache(app)
 
+def jsonify(*args, **kwargs):
+    return Response( json.dumps( dict(*args, **kwargs),
+        indent=None if request.is_xhr else 2), mimetype='application/json')
 
 def get_xmlrpc_server():
-    device_id = request.args['device_id']
+    device_id = request.query['device_id']
     device_config = get_config_by_id( get_cluster_config_obj(), device_id )
     address = device_config['ip']
     return xmlrpclib.ServerProxy( 'http://' + address )
 
 
 def get_UI_config_obj():
-    device_id = request.args['device_id']
+    device_id = request.query['device_id']
     device_config = get_config_by_id( get_cluster_config_obj(), device_id )
     UI_config = get_config_by_fn( device_config['config_file'] )
     return UI_config
@@ -67,8 +76,8 @@ def xmlrpc_call( elem_args, extra_args, fast_update=False ):
 @app.route( '/get_image'    )
 @app.route( '/button_click' )
 def button_click():
-    button_id  = request.args.get("id")
-    extra_args = request.args.get( "extra_args", [] )
+    button_id  = request.query.get("id")
+    extra_args = request.query.get( "extra_args", [] )
     elem_args  = get_config_by_id( get_UI_config_obj(), button_id )
 
     if   request.path == '/button_click':
@@ -92,36 +101,47 @@ def button_click():
 
 @app.route( '/save_image' )
 def save_image():
-    elem_id  = request.args.get("id")
+    elem_id  = request.query.get("id")
     cache_key = 'last_image' + elem_id
     print cache_key
     img_data = cache.get('last_image' + elem_id).data
     return Response(img_data, mimetype='image/jpeg')
 
 
-@app.template_filter('debug')
+#@app.template_filter('debug')
 def debug(x):
     """print content to console from jinja2 templates."""
     print x
     return ""
 
-
 @app.route('/')
 @app.route('/html_gen')
 def html_gen():
-    if 'device_id' in request.args.keys():
-        device_id = request.args['device_id']
+    if 'device_id' in request.query.keys():
+        device_id = request.query['device_id']
         device_config = get_config_by_id( get_cluster_config_obj(), device_id )
         UI_config = get_config_by_fn( device_config['config_file'] )
         template_name = ['web_interface.html']
-        return render_template( template_name,
+        return template( template_name[0],
             UI_config = UI_config,
             cluster_config = get_cluster_config_obj(),
             device_id = device_id,
-            current_device_name = device_config['name'] )
+            current_device_name = device_config['name'],
+            template_lookup=['templates'] )
     else:
-        return render_template( "device_picker.html",
-            cluster_config = get_cluster_config_obj())
+        return template( "device_picker.html",
+            cluster_config = get_cluster_config_obj(),
+            template_lookup=['templates'])
+
+
+# Static Routes
+@app.get('/static/<filename:re:.*\.js>')
+@app.get('/static/<filename:re:.*\.css>')
+@app.get('/static/<filename:re:.*\.(jpg|png|gif|ico)>')
+@app.get('/static/<filename:re:.*\.(eot|ttf|woff|svg)>')
+def static_file_route(filename):
+    print "it si being rooted here"
+    return static_file(filename, root='static')
 
 
 if __name__ == "__main__":
@@ -130,4 +150,5 @@ if __name__ == "__main__":
     else: cluster_config_fn = './examples/OLT_cluster_config.ini'
     app.config.update( dict( cluster_config_fn=cluster_config_fn ))
     app.debug = True
-    app.run(host='0.0.0.0', port=80)
+    app.run(host='localhost', port=5000, reloader=True)
+    #app.run(host='0.0.0.0', port=5000)
