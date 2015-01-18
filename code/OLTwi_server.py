@@ -1,32 +1,55 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-#from flask import Flask, render_template, request, jsonify, Response, abort
+
 import calendar, time, xmlrpclib
+from functools import partial
+
 from OLT_config_parser import get_config, get_config_by_id
 from OLT_cache import Cache
 
-from bottle import route, run, response, abort, Bottle, get
-from bottle import request, static_file, Response
-import json
-from bottle import jinja2_template as template
+try:
+    from flask import Flask, render_template, request, jsonify, Response, abort
+    def get_query_args(): return request.args
+    app = Flask(__name__)
 
-#app = Flask(__name__)
-app = Bottle()
-cache = Cache(app)
+except ImportError:
+    from bottle import abort, Bottle, static_file, Response, request
+    from bottle import jinja2_template as template
+    render_template = partial(template, template_lookup=['templates'])
+    import json
 
-def jsonify(*args, **kwargs):
-    return Response( json.dumps( dict(*args, **kwargs),
+    class WrapBottle(Bottle):
+        def __init__(self):
+            super(WrapBottle, self).__init__()
+            self.run = partial(super(WrapBottle, self).run, reloader=True)
+
+    def get_query_args(): return request.query
+
+    app = WrapBottle()
+    def jsonify(*args, **kwargs):
+        return Response( json.dumps( dict(*args, **kwargs),
         indent=None if request.is_xhr else 2), mimetype='application/json')
 
+    # Static Routes
+    @app.get('/static/<filename:re:.*\.js>')
+    @app.get('/static/<filename:re:.*\.css>')
+    @app.get('/static/<filename:re:.*\.(jpg|png|gif|ico)>')
+    @app.get('/static/<filename:re:.*\.(eot|ttf|woff|svg)>')
+    def static_file_route(filename):
+        return static_file(filename, root='static')
+
+cache = Cache(app)
+
+
 def get_xmlrpc_server():
-    device_id = request.query['device_id']
+    device_id = get_query_args()['device_id']
     device_config = get_config_by_id( get_cluster_config_obj(), device_id )
     address = device_config['ip']
     return xmlrpclib.ServerProxy( 'http://' + address )
 
 
 def get_UI_config_obj():
-    device_id = request.query['device_id']
+    device_id = get_query_args()['device_id']
     device_config = get_config_by_id( get_cluster_config_obj(), device_id )
     UI_config = get_config_by_fn( device_config['config_file'] )
     return UI_config
@@ -36,7 +59,7 @@ def get_cluster_config_obj():
     return get_config_by_fn(app.config['cluster_config_fn'])
 
 
-@cache.memoize(60, unless=(lambda: app.debug))
+@cache.memoize( 60, unless=(lambda: app.debug) )
 def get_config_by_fn(fn):
     return get_config(fn)
 
@@ -57,7 +80,7 @@ def xmlrpc_call( elem_args, extra_args, fast_update=False ):
 
     func = elem_args['func']
 
-    @cache.memoize(1, unless = (lambda: fast_update) )
+    @cache.memoize( 1, unless = (lambda: fast_update) )
     def cachable( func, args ):
         """This function construct allow caching by matching func, args"""
         f = getattr(xmlrpc_server, func)
@@ -76,8 +99,8 @@ def xmlrpc_call( elem_args, extra_args, fast_update=False ):
 @app.route( '/get_image'    )
 @app.route( '/button_click' )
 def button_click():
-    button_id  = request.query.get("id")
-    extra_args = request.query.get( "extra_args", [] )
+    button_id  = get_query_args().get("id")
+    extra_args = get_query_args().get( "extra_args", [] )
     elem_args  = get_config_by_id( get_UI_config_obj(), button_id )
 
     if   request.path == '/button_click':
@@ -101,7 +124,7 @@ def button_click():
 
 @app.route( '/save_image' )
 def save_image():
-    elem_id  = request.query.get("id")
+    elem_id  = get_query_args().get("id")
     cache_key = 'last_image' + elem_id
     print cache_key
     img_data = cache.get('last_image' + elem_id).data
@@ -117,31 +140,19 @@ def debug(x):
 @app.route('/')
 @app.route('/html_gen')
 def html_gen():
-    if 'device_id' in request.query.keys():
-        device_id = request.query['device_id']
+    if 'device_id' in get_query_args().keys():
+        device_id = get_query_args()['device_id']
         device_config = get_config_by_id( get_cluster_config_obj(), device_id )
         UI_config = get_config_by_fn( device_config['config_file'] )
         template_name = ['web_interface.html']
-        return template( template_name[0],
+        return render_template( template_name[0],
             UI_config = UI_config,
             cluster_config = get_cluster_config_obj(),
             device_id = device_id,
-            current_device_name = device_config['name'],
-            template_lookup=['templates'] )
+            current_device_name = device_config['name'] )
     else:
-        return template( "device_picker.html",
-            cluster_config = get_cluster_config_obj(),
-            template_lookup=['templates'])
-
-
-# Static Routes
-@app.get('/static/<filename:re:.*\.js>')
-@app.get('/static/<filename:re:.*\.css>')
-@app.get('/static/<filename:re:.*\.(jpg|png|gif|ico)>')
-@app.get('/static/<filename:re:.*\.(eot|ttf|woff|svg)>')
-def static_file_route(filename):
-    print "it si being rooted here"
-    return static_file(filename, root='static')
+        return render_template( "device_picker.html",
+            cluster_config = get_cluster_config_obj() )
 
 
 if __name__ == "__main__":
@@ -149,6 +160,5 @@ if __name__ == "__main__":
     if len(sys.argv) == 2: cluster_config_fn = sys.argv[1]
     else: cluster_config_fn = './examples/OLT_cluster_config.ini'
     app.config.update( dict( cluster_config_fn=cluster_config_fn ))
-    app.debug = True
-    app.run(host='localhost', port=5000, reloader=True)
-    #app.run(host='0.0.0.0', port=5000)
+    app.debug = False
+    app.run(host='0.0.0.0', port=5000)
